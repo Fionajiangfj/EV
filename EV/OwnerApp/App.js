@@ -6,7 +6,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 // screens
 import RentalFromScreen from './screens/RentalFormScreen';
-import RentalListScreen from './screens/RentalListScreen';
+import MyRentalListScreen from './screens/MyRentalListScreen';
 
 // icons
 import { MaterialIcons } from '@expo/vector-icons';
@@ -31,7 +31,7 @@ export default function App() {
         })}
       > 
         <Tab.Screen name="Rental Form" component={RentalFromScreen} />
-        <Tab.Screen name="Rental List" component={RentalListScreen} />
+        <Tab.Screen name="Rental List" component={MyRentalListScreen} />
       </Tab.Navigator>
     </NavigationContainer>
   );
