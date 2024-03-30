@@ -15,7 +15,7 @@ import { db } from '../firebaseConfig';
 import { collection, getDocs, query, where } from "firebase/firestore";
 
 
-export default function RentalListScreen() {
+export default function MyRentalListScreen() {
 
     // state variable for the text box
     const [nameFromUI, setNameFromUI] = useState("")
