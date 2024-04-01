@@ -1,83 +1,145 @@
-import { StyleSheet, Text, View, TextInput, Switch, Pressable} from 'react-native';
-import {useState} from "react"
+import React, { useState, useEffect } from 'react';
+import { ScrollView, View, Text, TextInput, Button, StyleSheet, Picker } from 'react-native';
 
-// import the db variable from firebaseConfig.js
-import { db } from '../firebaseConfig';
+const RentalFormScreen = () => {
+    const [vehicles, setVehicles] = useState([]);
+    const [selectedVehicleIndex, setSelectedVehicleIndex] = useState();
+    const [vehicleName, setVehicleName] = useState('');
+    const [capacity, setCapacity] = useState('');
+    const [fuel, setFuel] = useState('');
+    const [type, setType] = useState('');
+    const [licensePlate, setLicensePlate] = useState('');
+    const [address, setAddress] = useState('');
+    const [price, setPrice] = useState('');
 
-// importing the firestore functions that you need
-import { collection, addDoc } from "firebase/firestore";
+    useEffect(() => {
+        const fetchVehicles = async () => {
+            try {
+                const response = await fetch('https://fionajiangfj.github.io/EVRentingApp/vehicles.json');
+                const data = await response.json();
+                // Assuming the API directly returns an array of vehicles
+                setVehicles(data || []); // Fallback to an empty array if undefined
+            } catch (error) {
+                console.error('Failed to fetch vehicles:', error);
+                setVehicles([]); // Ensure vehicles is always an array
+            }
+        };
+    
+        fetchVehicles();
+    }, []);
 
-export default function EntryFormScreen() {
+    const handleVehicleChange = (itemValue, itemIndex) => {
+        console.log("Selected index:", itemIndex); // Debug index
+        setSelectedVehicleIndex(itemIndex);
+        const selectedVehicle = vehicles[itemIndex];
+        console.log("Selected vehicle:", selectedVehicle);
+        setVehicleName(`${selectedVehicle.make} ${selectedVehicle.model} ${selectedVehicle.trim}`);
+        setCapacity(selectedVehicle?.capacity?.toString() || '');
+        setFuel(selectedVehicle?.fuel?.toString() || '');
+        setType(selectedVehicle?.type?.toString() || '')
 
-    const [nameFromUI, setNameFromUI] = useState("")
-    const [gpaFromUI, setGPAFromUI] = useState("")
-    const [isPGFromUI, setIsPGFromUI] = useState(true)
+    };
 
-    const buttonPressed = async () => {
-        // convert gpa to number
-        const gpaAsNumber = parseFloat(gpaFromUI)
-        // create object to insert
-        const studentToInsert = {
-            name:nameFromUI,
-            gpa:gpaAsNumber,
-            isPostGrad:isPGFromUI
-        }
-        try {
-            // insert into database
-            // Add a new document with a generated id.
-            const insertedDocument = await addDoc(collection(db, "students"), studentToInsert);
-            // display success message
-            console.log("Document written with ID: ", insertedDocument.id);            
-            alert(`done! ${insertedDocument.id}`)
-        } catch (err) {
-            console.log(err)
-        }
-    }
+    // Placeholder function for adding a photo
+    const handleAddPhoto = () => {
+        // Here, you would integrate your photo selection logic
+        alert('Add photo logic goes here.');
+    };
 
+    // Placeholder function for form submission
+    const handleSubmit = () => {
+        // Here, you would integrate your form submission logic
+        alert('Form submission logic goes here.');
+    };
 
-    return(
-        <View style={styles.container}>   
-            <TextInput placeholder="Enter name" onChangeText={setNameFromUI} value={nameFromUI} style={styles.tb}/>
-            <TextInput placeholder="Enter gpa" keyboardType="numeric" onChangeText={setGPAFromUI} value={gpaFromUI} style={styles.tb}/>
-            
-            
-            <Text>Is a post graduate student?</Text>
-            <Switch onValueChange={setIsPGFromUI} value={isPGFromUI} style={{alignSelf:"flex-start"}}/>
-            
-            <Pressable onPress={buttonPressed} style={styles.btn}>
-                <Text style={styles.btnLabel}>Insert to database</Text>
-            </Pressable>
+    return (
+        <ScrollView style={styles.container}>
+            <Text style={styles.label}>Vehicle Name:</Text>
+            <Picker
+                selectedValue={selectedVehicleIndex}
+                onValueChange={handleVehicleChange}
+            >
+                {vehicles.map((vehicle, index) => (
+                    <Picker.Item
+                        key={index}
+                        label={`${vehicle.make} ${vehicle.model} ${vehicle.trim}`}
+                        value={index}
+                    />
+                ))}
+            </Picker>
+            <Button
+                title="Add Vehicle Photo"
+                onPress={handleAddPhoto}
+            />
 
-        </View>
-    )
-}
+            <Text style={styles.label}>Capacity:</Text>
+            <TextInput
+                style={styles.input}
+                onChangeText={setCapacity}
+                value={capacity}
+                keyboardType="numeric"
+            />
+
+            <Text style={styles.label}>Fuel:</Text>
+            <TextInput
+                style={styles.input}
+                onChangeText={setFuel}
+                value={fuel}
+            />
+
+            <Text style={styles.label}>Type:</Text>
+            <TextInput
+                style={styles.input}
+                onChangeText={setType}
+                value={type}
+            />
+
+            <Text style={styles.label}>License Plate:</Text>
+            <TextInput
+                style={styles.input}
+                onChangeText={setLicensePlate}
+                value={licensePlate}
+            />
+
+            <Text style={styles.label}>Address:</Text>
+            <TextInput
+                style={styles.input}
+                onChangeText={setAddress}
+                value={address}
+            />
+
+            <Text style={styles.label}>Price:</Text>
+            <TextInput
+                style={styles.input}
+                onChangeText={setPrice}
+                value={price}
+                keyboardType="numeric"
+            />
+
+            <Button
+                title="Submit"
+                onPress={handleSubmit}
+            />
+        </ScrollView>
+    );
+};
+
+export default RentalFormScreen;
 
 const styles = StyleSheet.create({
     container: {
-      flex: 1,
-      backgroundColor: '#fff',      
-      padding:20,
+        flex: 1,
+        padding: 20,
     },
-    tb: {
-        width:"100%",    
-        borderRadius:5,
-        backgroundColor:"#efefef",
-        color:"#333",
-        fontWeight:"bold",  
-        paddingHorizontal:10,
-        paddingVertical:15,
-        marginVertical:10,        
-    }, 
-    btn: {
-        borderWidth:1, 
-        borderColor:"#141D21", 
-        borderRadius:8, 
-        paddingVertical:16, 
-        marginVertical:20
-    }, 
-    btnLabel: {
-        fontSize:16, 
-        textAlign:"center"
-    }   
+    label: {
+        marginVertical: 8,
+    },
+    input: {
+        borderColor: '#cccccc',
+        borderWidth: 1,
+        padding: 10,
+        marginBottom: 15,
+        borderRadius: 5,
+    },
 });
 
