@@ -1,97 +1,127 @@
-import { ScrollView, View, Pressable, Text, StyleSheet } from "react-native";
-import { useState, useEffect } from "react";
+import { ScrollView, View, Pressable, Text, StyleSheet, Dimensions, Button } from "react-native";
+import { useState, useEffect, useRef } from "react";
+import Icon from 'react-native-vector-icons/FontAwesome5';
+
+// map imports
 import * as Location from "expo-location";
-// import MapView, {Marker} from 'react-native-maps';
+import MapView, { Marker } from "react-native-maps";
 
 const MapViewComponent = () => {
 
     const [deviceLocation, setDeviceLocation] = useState(null);
+    const [currRegion, setCurrRegion] = useState(null);
+    const [currCoord, setCurrCoord] = useState({});
 
+
+    // Function to fetch current location and set it as initial region
     const getCurrentLocation = async () => {
         try {
-            // get permissions
-            Location.requestForegroundPermissionsAsync()
-            .then((result) => {
-                console.log(`Result from permission request: ${result.status}`);
+            // Get permissions
+            const { status } = await Location.requestForegroundPermissionsAsync();
 
-                if (result.status === "granted") {
-                    console.log(`Location permission granted`);
+            if (status !== "granted") {
+                console.log("Location permission denied");
+                return;
+            }
 
-                    //get device location
-                    return Location.getCurrentPositionAsync();
-                } else {
-                    console.log(`Location permission DENIED`);
-                    throw new Error(`User did not grant location permission`);
-                }
-            })
+            // Get device location
+            const location = await Location.getCurrentPositionAsync({});
+            const { latitude, longitude } = location.coords;
 
-            // if permission granted, then get the location
-            .then((location) => {
-                console.log(`Location: ${JSON.stringify(location)}`);
-                console.log(`Lat: ${location.coords.latitude}`);
-                console.log(`Lng: ${location.coords.longitude}`);
+            // Set device location
+            const coords = { latitude, longitude };
+            setDeviceLocation(coords);
 
-                // 3. do something with the retreived location
-                const coords = {
-                    latitude: location.coords.latitude,
-                    longitude: location.coords.longitude,
-                };
-
-                setDeviceLocation(coords);
-            }) 
-        } catch (err) {
-            console.log(err);
+            // Set initial region to device location
+            const region = {
+                latitude,
+                longitude,
+                latitudeDelta: 0.005,
+                longitudeDelta: 0.005,
+            };
+            setCurrRegion(region);
+            setCurrCoord(coords);
+        } catch (error) {
+            console.error("Error getting current location:", error);
         }
     };
 
+    // a variable to programmatically access the MapView element
+    const mapRef = useRef(null);
+
+    const mapMoved = (updatedRegion) => {
+        console.log(`Map moved to : ${updatedRegion.latitude} ${updatedRegion.longitude}`);
+        setCurrRegion(updatedRegion);
+    };
+
+    // const moveToDeviceLocation = () => {
+    //     mapRef.current.animateCamera({ center: deviceLocation }, 2000);
+    // };
+
     useEffect(() => {
-        getCurrentLocation()
-    }, [])
+        getCurrentLocation();
+    }, []);
+
+    // func for bottom sheet
+    const tap = () => {
+        console.log('Marker Pressed!')
+    }
 
     return (
         <View style={styles.mapContainer}>
-            {/* Getting Current location */}
-            {/* <Pressable style={styles.btn} onPress={getCurrentLocation}>
-                <Text style={styles.btnLabel}>Get Current Location</Text>
-            </Pressable> */}
             <Text>Your location is {JSON.stringify(deviceLocation)}</Text>
 
-            {deviceLocation !== null && (
-                <View style={{ marginVertical: 10 }}>
-                    <Text>
-                        Device latitude:
-                        <Text style={{ color: "blue" }}> {deviceLocation.latitude}</Text>
-                    </Text>
-                    <Text>
-                        Device longitude:
-                        <Text style={{ color: "blue" }}> {deviceLocation.longitude}</Text>
-                    </Text>
-                </View>
-            )}
+            <MapView
+                style={styles.map}
+                initialRegion={currRegion}
+                onRegionChangeComplete={mapMoved}
+                ref={mapRef}
+            >
+                <Marker
+                    coordinate={currCoord}
+                    title="1 Main Street, Toronto"
+                    description="Center of Toronto"
+                >
+                    {/* <Icon name="map-marker-alt" size={28} color='#0064B1' /> */}
+                    <Pressable style={styles.btn} onPress={tap}>
+                        <Text style={styles.marker}>$100</Text>
+                    </Pressable>
+                </Marker>
+            </MapView>
 
         </View>
     );
-    
- 
-
-}
+};
 
 export default MapViewComponent;
 
 const styles = StyleSheet.create({
     mapContainer: {
         backgroundColor: "#fff",
-        padding: 20,
+        padding: 10,
+    },
+    map: {
+        height: "85%",
+        width: "100%",
+        marginTop: 5,
+    },
+    marker: {
+        backgroundColor: "#fff",
     },
     btn: {
         borderWidth: 1,
-        borderColor: "#141D21",
-        borderRadius: 8,
-        paddingVertical: 16,
-        marginVertical: 10,
+        borderColor: "#fff",
+        borderRadius: 15,
+        padding: 8,
+        backgroundColor: "#fff",
     },
     btnLabel: {
         fontSize: 16,
         textAlign: "center",
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        paddingHorizontal: 20,
+        marginBottom: 20,
     },
 });
