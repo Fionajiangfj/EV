@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     map: {
         height: "85%",
         width: "100%",
-        marginTop: 5,
+        marginTop: 15,
     },
     marker: {
         backgroundColor: "#fff",
