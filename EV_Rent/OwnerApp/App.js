@@ -1,12 +1,11 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 
-import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { NavigationContainer } from '@react-navigation/native';
 
 // screens
-import RentalFromScreen from './screens/RentalFormScreen';
 import MyRentalListScreen from './screens/MyRentalListScreen';
+import RentalFromScreen from './screens/RentalFormScreen';
 
 // icons
 import { MaterialIcons } from '@expo/vector-icons';
@@ -19,10 +18,10 @@ export default function App() {
       <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size })=> {
-            if (route.name == "Rental Form") {              
+            if (route.name == "Rental Form") {
               return <MaterialIcons name="person-search" size={24} color={color} />
             }
-            if (route.name === "Rental List") {              
+            if (route.name === "Rental List") {
               return <MaterialIcons name="format-list-bulleted" size={24} color={color} />
             }
           },
