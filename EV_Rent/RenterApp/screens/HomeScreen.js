@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, StyleSheet, Text, FlatList } from "react-native"
+import { View, StyleSheet, Text, FlatList, Pressable } from "react-native"
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { ListItem, SearchBar } from "react-native-elements"; 
 
@@ -9,10 +9,6 @@ import MapViewComponent from "../Components/MapView";
 const HomeScreen = () => {
     const [searchKeyword, setSearchKeyword] = useState('')
     const [mapMarker, setMapMarker] = useState('')
-
-    const tap = () => {
-        console.log('Marker Pressed!')
-    }
 
     const handleSearch = (text) => {
         setSearchKeyword(text);
@@ -29,14 +25,9 @@ const HomeScreen = () => {
             inputContainerStyle={{ backgroundColor: '#e8e8e8', borderRadius: 20 }}
             inputStyle={{ color: 'black' }}/> 
             
+            {/* Mapview */}
             <MapViewComponent />
-
-            <Text>MapView</Text>
-
-        
-            {/* <Pressable onPress={tap}>
-                <Icon name="map-marker-alt" size={28} color= '#0064B1' />
-            </Pressable> */}
+           
         </View>
     )
 }
