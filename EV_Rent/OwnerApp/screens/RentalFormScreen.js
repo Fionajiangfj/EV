@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, View, Text, TextInput, Button, StyleSheet, Picker } from 'react-native';
+import { ScrollView, View, Text, TextInput, Button, StyleSheet, Picker, Image } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 
 const RentalFormScreen = () => {
@@ -14,6 +14,7 @@ const RentalFormScreen = () => {
     const [items, setItems] = useState([]);
 
     //other form fields
+    const [imageURL, setImageURL] = useState('');
     const [capacity, setCapacity] = useState('');
     const [fuel, setFuel] = useState('');
     const [type, setType] = useState('');
@@ -73,6 +74,7 @@ const RentalFormScreen = () => {
 
             if (selectedVehicle) {
                 setVehicleName(`${selectedVehicle.make} ${selectedVehicle.model} ${selectedVehicle.trim}`);
+                setImageURL(selectedVehicle?.images[0]?.url_full?.toString() || '');
                 setCapacity(selectedVehicle?.seats_max?.toString() || '');
                 setFuel(selectedVehicle?.fuel?.toString() || '');
                 setType(selectedVehicle?.type?.toString() || '')
@@ -95,18 +97,7 @@ const RentalFormScreen = () => {
     return (
         <ScrollView style={styles.container}>
             <Text style={styles.label}>Vehicle Name:</Text>
-            {/* <Picker
-                selectedValue={selectedVehicleIndex}
-                onValueChange={handleVehicleChange}
-            >
-                {vehicles.map((vehicle, index) => (
-                    <Picker.Item
-                        key={index}
-                        label={`${vehicle.make} ${vehicle.model} ${vehicle.trim}`}
-                        value={index}
-                    />
-                ))}
-            </Picker> */}
+
             <DropDownPicker
                 open={open}
                 value={value}
@@ -121,10 +112,19 @@ const RentalFormScreen = () => {
                 zIndex={3000} // Ensure dropdown covers other components
                 zIndexInverse={1000}
             />
-            <Button
+            {/* <Button
                 title="Add Vehicle Photo"
                 onPress={handleAddPhoto}
-            />
+            /> */}
+
+            {
+                imageURL !== '' && (
+                    <Image
+                        style={styles.carImage}
+                        source={{ uri: imageURL }}
+                    />
+                )
+            }
 
             <Text style={styles.label}>Capacity:</Text>
             <TextInput
@@ -194,6 +194,11 @@ const styles = StyleSheet.create({
         padding: 10,
         marginBottom: 15,
         borderRadius: 5,
+    },
+    carImage: {
+        width: 100,  
+        height: 100, 
+        resizeMode: 'contain' 
     },
 });
 
