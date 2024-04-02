@@ -9,6 +9,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@gorhom/bottom-sheet": "^4.6.1",
     "@react-native-masked-view/masked-view": "^0.3.0",
     "@react-navigation/bottom-tabs": "^6.5.20",
     "@react-navigation/native": "^6.1.17",
@@ -16,7 +17,9 @@
     "expo": "~50.0.14",
     "expo-location": "~16.5.5",
     "expo-status-bar": "~1.11.1",
+    "firebase": "^10.10.0",
     "framer-motion": "^11.0.24",
+    "prop-types": "^15.8.1",
     "react": "18.2.0",
     "react-modal-sheet": "^2.2.0",
     "react-native": "0.73.6",

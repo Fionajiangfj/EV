@@ -1,8 +1,9 @@
 /* eslint-disable no-unused-vars */
 class Vehicle{
-    constructor(id, name, photo, capacity, color, license_plate, pickup_address, price, latitude, longitude){
+    constructor(id, owner ,name, photo, capacity, color, license_plate, pickup_address, price, latitude, longitude){
         this.id = id;
         this.name = name;
+        this.owner = owner;
         this.photo = photo;
         this.capacity = capacity;
         this.color = color;
@@ -17,6 +18,7 @@ class Vehicle{
         return {
             id: this.id,
             name: this.name,
+            owner: this.owner,
             photo: this.photo,
             capacity: this.capacity,
             color: this.color,
@@ -30,6 +32,6 @@ class Vehicle{
 
     static fromFirestore(doc){
         const data = doc.data();
-        return new Vehicle(doc.id, data.name, data.photo, data.capacity, data.color, data.license_plate, data.pickup_address, data.price, data.latitude, data.longitude);
+        return new Vehicle(doc.id, data.name, data.photo, data.owner, data.capacity, data.color, data.license_plate, data.pickup_address, data.price, data.latitude, data.longitude);
     }
 }

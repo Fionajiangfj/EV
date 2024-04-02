@@ -1,18 +1,27 @@
-import { ScrollView, View, Pressable, Text, StyleSheet, Dimensions, Button } from "react-native";
-import { useState, useEffect, useRef } from "react";
-import Icon from 'react-native-vector-icons/FontAwesome5';
-
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { VehicleController } from '../controller/VehicleController';
 // map imports
 import * as Location from "expo-location";
 import MapView, { Marker } from "react-native-maps";
-
 const MapViewComponent = () => {
 
     const [deviceLocation, setDeviceLocation] = useState(null);
     const [currRegion, setCurrRegion] = useState(null);
     const [currCoord, setCurrCoord] = useState({});
+    const [vehicles, setVehicles] = useState([]);
+    const [selectedVehicle, setSelectedVehicle] = useState(null);
+    const bottomSheetRef = useRef(null);
+    useEffect(() => {
+        async function fetchVehicles() {
+            const vehicles = await VehicleController.fetchVehicles();
+            console.log(vehicles);
+            setVehicles(vehicles);
 
+        }
 
+        fetchVehicles();
+    }, []);
     // Function to fetch current location and set it as initial region
     const getCurrentLocation = async () => {
         try {
@@ -46,6 +55,8 @@ const MapViewComponent = () => {
         }
     };
 
+    const snapPoints = useMemo(() => ['25%', '50%'], []);
+
     // a variable to programmatically access the MapView element
     const mapRef = useRef(null);
 
@@ -63,9 +74,10 @@ const MapViewComponent = () => {
     }, []);
 
     // func for bottom sheet
-    const tap = () => {
-        console.log('Marker Pressed!')
-    }
+    const onMarkerPress = (vehicle) => {
+        setSelectedVehicle(vehicle);
+        bottomSheetRef.current?.expand();
+    };
 
     return (
         <View style={styles.mapContainer}>
@@ -77,18 +89,15 @@ const MapViewComponent = () => {
                 onRegionChangeComplete={mapMoved}
                 ref={mapRef}
             >
-                <Marker
-                    coordinate={currCoord}
-                    title="1 Main Street, Toronto"
-                    description="Center of Toronto"
-                >
-                    {/* <Icon name="map-marker-alt" size={28} color='#0064B1' /> */}
-                    <Pressable style={styles.btn} onPress={tap}>
-                        <Text style={styles.marker}>$100</Text>
-                    </Pressable>
-                </Marker>
+                {vehicles.map(vehicle => (
+                    <Marker
+                        key={vehicle.id}
+                        coordinate={{ latitude: vehicle.latitude, longitude: vehicle.longitude }}
+                        title={vehicle.name}
+                        onPress={() => onMarkerPress(vehicle)}
+                    />
+                ))}
             </MapView>
-
         </View>
     );
 };

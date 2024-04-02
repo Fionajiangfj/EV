@@ -1,12 +1,10 @@
-import Sheet, {SheetRef} from 'react-modal-sheet';
-import { useRef, useState } from "react";
+import React, { useRef, useState } from 'react';
 import { View } from "react-native";
-
+import { CustomButton } from './Button';
 const BottomSheet = () => {
 
     const [isOpen, setOpen] = useState(false);
     const ref = useRef(SheetRef);
-
     return (
         <View>
             <Pressable onPress={() => setOpen(true)}>
@@ -22,7 +20,7 @@ const BottomSheet = () => {
 
         
             </Sheet> */}
-            
+            <CustomButton onPress={()=>console.log("Button Pressed")} title="Book now"/>
         </View>
         
     );
