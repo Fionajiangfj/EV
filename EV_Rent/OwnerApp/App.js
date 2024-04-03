@@ -43,8 +43,7 @@ const StackNavigator = () => {
 
 const TabNavigator = () => {
   return (
-    <Tab.Navigator 
-      screenOptions={({ route }) => ({
+    <Tab.Navigator screenOptions={({ navigation, route }) => ({
       tabBarIcon: ({ focused, color, size }) => {
         if (route.name == "Rental Form") {
           return <AntDesign name="form" size={24} color={color} />

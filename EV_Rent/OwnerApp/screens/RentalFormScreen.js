@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { ScrollView, View, Text, TextInput, Button, StyleSheet, Picker, Image } from 'react-native';
+
+//db
+import { db } from "../firebaseConfig";
+import { collection, addDoc, updateDoc, deleteDoc, getDoc, doc } from "firebase/firestore";
+
 import DropDownPicker from 'react-native-dropdown-picker';
 import * as Location from "expo-location";
 
-const RentalFormScreen = () => {
+const RentalFormScreen = ( {navigation, route} ) => {
 
+    const {email} = route.params
     const [vehicles, setVehicles] = useState([]);
 
     //DropDownPicker
@@ -21,7 +27,7 @@ const RentalFormScreen = () => {
     const [type, setType] = useState('');
     const [licensePlate, setLicensePlate] = useState('');
     const [address, setAddress] = useState('');
-    const [latLng, setLatLng] = useState({ lat: null, lng: null });
+    // const [latLng, setLatLng] = useState({ lat: null, lng: null });
     const [price, setPrice] = useState('');
 
     useEffect(() => {
@@ -74,31 +80,22 @@ const RentalFormScreen = () => {
 
     // Placeholder function for form submission
     const handleSubmit = async () => {
+
+        console.log(email);
+
         let errorMessage = "";
     
-        // Validate vehicle name
         if (!vehicleName.trim()) errorMessage += "Vehicle name is required.\n";
-    
-        // Validate capacity (example: must be a number greater than 0)
         if (!capacity.trim() || isNaN(capacity) || Number(capacity) <= 0) {
             errorMessage += "Capacity must be a positive number.\n";
         }
-    
-        // Validate fuel type (example: must not be empty)
         if (!fuel.trim()) errorMessage += "Fuel type is required.\n";
-    
-        // Validate type (example: must not be empty)
         if (!type.trim()) errorMessage += "Vehicle type is required.\n";
-    
-        // Validate street (example: must not be empty)
         if (!address.trim()) errorMessage += "Address is required.\n";
-    
-        // Validate price (example: must be a number and not negative)
         if (!price.trim() || isNaN(price) || Number(price) < 0) {
             errorMessage += "Price must be a non-negative number.\n";
         }
-    
-        // Show error messages if any validations failed
+
         if (errorMessage) {
             alert(`Please correct the following errors:\n${errorMessage}`);
             return; // Stop the form submission
@@ -112,16 +109,52 @@ const RentalFormScreen = () => {
                 alert("No coordinates found")
                 return
             }
-            console.log(result)           
-            alert(JSON.stringify(result))
-            // update state variable to an object that contains the lat/lng
-            // (alternatively you could have created 2 separate state variables)
-            setLatLng({lat: result.latitude, lng: result.longitude})
+            console.log(result)
+
+            insertCar({
+                lat: result.latitude,
+                lng: result.longitude,
+            });
 
         } catch (err) {
             console.log(err)
         }
     };
+
+    const insertCar = async (latLng) => {
+        console.log(`Submit button pressed`);
+
+        try{
+            const carToInsert = {
+                vehicleName: vehicleName,
+                vehiclePhoto: imageURL,
+                capacity: capacity,
+                fuel: fuel,
+                type: type,
+                licensePlate: licensePlate,
+                pickupAddress: address,
+                price: price,
+                latLng: latLng
+            }
+
+            console.log(`carToInsert : ${carToInsert}`);
+
+            //to add into independent collection
+            // const insertedDoc = await addDoc(collection(db, "employees"), employeeToInsert);
+            // console.log(`Employee added successfully : ${insertedDoc.id}`);
+
+            //to add document to subcollection
+            const subCollectionRef = collection(db, "User", email, "Vehicle");
+            const insertedDoc = await addDoc(subCollectionRef, carToInsert);
+            console.log(`Car added successfully : ${insertedDoc.id}`);
+
+            // navigation.dispatch(StackActions.pop(1));
+            navigation.navigate('Rental List')
+
+        }catch(err){
+            console.error(`Error while saving document to collection : ${err}`);
+        }
+    }
 
 
     return (
