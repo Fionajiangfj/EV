@@ -15,12 +15,18 @@ const HomeScreen = () => {
         setIsBottomSheetVisible(true);
     };
 
+
+    const [searchResults, setSearchResults] = useState([])
+
     const handleCloseBottomSheet = () => {
         setIsBottomSheetVisible(false);
     };
+  
     const handleSearch = (text) => {
         setSearchKeyword(text);
         // Implement your search logic here
+
+
     };
 
     const handleonMarkerPress = (vehicle) => {
