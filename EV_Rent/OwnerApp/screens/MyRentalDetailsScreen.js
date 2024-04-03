@@ -12,16 +12,16 @@ const MyRentalDetailsScreen = ({route}) => {
         <View style={styles.detailContainer}>
 
                 {/* For thumbnail */}
-                <Image source={{ uri: "https://www.adobe.com/express/create/thumbnail/media_184a3a28ded5926b56142bf7f41b1c6972df38f0c.png?width=750&format=png&optimize=medium" }} style={{ width: "100%", height: 320 }} />
+                <Image source={{ uri: "https://hips.hearstapps.com/hmg-prod/images/2019-honda-civic-sedan-1558453497.jpg" }} style={{ width: "100%", height: 250 }} />
 
                 {/* title */}
-                <Text style={styles.rentalTitle}>Rental Details Screen</Text>
+                <Text style={styles.rentalTitle}>Audi A7 TFSIe</Text>
 
-                {/* Views */}
-                <Text style={styles.videoViews}>Views: </Text>
+                {/* Price */}
+                <Text style={styles.videoViews}>Price</Text>
 
                 {/* description */}
-                <Text style={styles.videoDescription}>description</Text>
+                <Text style={styles.videoDescription}>Pickup address</Text>
 
                 {/* Customized button to add video to favourites */}
                 <ButtonComponent

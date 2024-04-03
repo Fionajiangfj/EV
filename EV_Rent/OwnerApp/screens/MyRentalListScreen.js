@@ -1,5 +1,5 @@
 import React from "react"
-import { StyleSheet, Text, View, Pressable, TextInput, FlatList, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Pressable, TextInput, FlatList, TouchableOpacity, Image } from 'react-native';
 import { useState, useEffect } from "react"
 
 // 1. Import the db variable from firebaseConfig
@@ -105,7 +105,7 @@ import ButtonComponent from "../Components/ButtonComponent";
 
 //         }
 //     }
-                         
+
 
 
 //     return(
@@ -141,7 +141,7 @@ import ButtonComponent from "../Components/ButtonComponent";
 
 const MyRentalListScreen = ({ navigation }) => {
     // data source for the list. Objects must contain an id or key property.
-    const friendsList = [{ id: 33, name: "Marie" }, { id: 50, name: "Sasha" }, { id: 100, name: "Cornelius" }];
+    const friendsList = [{ id: 33, name: "Audi A7 TFSIe" }, { id: 50, name: "Ford" }, { id: 100, name: "Cornelius" }];
 
     // state variable
     const [myRentals, setMyRentals] = useState([])
@@ -197,9 +197,20 @@ const MyRentalListScreen = ({ navigation }) => {
 
     const ItemDivider = () => {
         return (
-            <View style={{ height: 1, width: "100%", backgroundColor: "#888" }} />
+            <View style={{ height: 1, width: "100%", backgroundColor: "#888"}} />
         )
     }
+
+    const formatAddress = (address) => {
+        // Split the address by comma and space
+        const addressParts = address.split(', ');
+        // Join the first two parts with a comma and a space
+        const firstLine = addressParts.slice(0, 2).join(', ');
+        // Join the rest of the parts with a comma and a space
+        const secondLine = addressParts.slice(2).join(', ');
+        // Return the formatted address
+        return `${firstLine}\n${secondLine}`;
+    };
 
     // render the list
     return (
@@ -221,17 +232,27 @@ const MyRentalListScreen = ({ navigation }) => {
                 <Text style={styles.noData}>No Data found</Text>
             ) : ( */}
 
-                {/* // Customized FlatList */}
-                <FlatListComponent
-                    data={friendsList}
-                    renderItem={({ item }) => (
-                        <Pressable style={styles.listItem} onPress={() => goToDetailsScreen()}>
-                            <Text style={styles.listTitle}>{item.name}</Text>
-                        </Pressable>
-                    )}
-                    keyExtractor={item => item.id}
-                    ItemSeparatorComponent={ItemDivider}
-                />
+            {/* // Customized FlatList */}
+            <FlatListComponent
+                data={friendsList}
+                renderItem={({ item }) => (
+                    <Pressable style={styles.listItem} onPress={() => goToDetailsScreen()}>
+                        <View style={styles.listImage}>
+                            <Image source={{ uri: "https://hips.hearstapps.com/hmg-prod/images/2019-honda-civic-sedan-1558453497.jpg" }} style={{ width: "40%", height: 100, marginVertical: 10, borderRadius: 10 }} />
+                            <View style={styles.listBody}>
+                                <View style={styles.listBody}>
+                                <Text style={styles.listTitle}>{item.name}</Text>
+                                <Text style={styles.listPrice}>$250</Text>
+                                </View>
+                                <Text style={styles.listAddress} numberOfLines={2}>{formatAddress("153 Main Street, Seattle, Washington, USA")}</Text>
+                            </View>
+                        </View>
+
+                    </Pressable>
+                )}
+                keyExtractor={item => item.id}
+                ItemSeparatorComponent={ItemDivider}
+            />
             {/* )} */}
 
 
@@ -266,18 +287,37 @@ const styles = StyleSheet.create({
     listItem: {
         flexDirection: 'column',
         alignItems: 'left',
-        padding: 10,
     },
 
     listTitle: {
-        fontSize: 15,
+        fontSize: 20,
         textAlign: 'left',
         paddingVertical: 10,
         color: 'black',
         fontWeight: 'bold',
     },
-
-
+    listImage: {
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        gap: 10,
+        paddingBottom: 10,
+    },
+    listBody: {
+        flexDirection: 'column',
+        justifyContent: 'flex-start'
+    },
+    listPrice: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#0064B1',
+        paddingBottom: 8,
+    },
+    listAddress: {
+        fontSize: 16,
+        fontWeight: '500',
+        color: 'gray',
+        paddingBottom: 8,
+    }
 
 });
 
