@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { SearchBar } from "react-native-elements";
-// import BottomSheet from "../Components/BottomSheet";
+
+// components
+import BottomSheet from "../Components/BottomSheet";
 import MapViewComponent from "../Components/MapView";
 
 const HomeScreen = () => {
     const [searchKeyword, setSearchKeyword] = useState('')
-    const [mapMarker, setMapMarker] = useState('')
+    // const [mapMarker, setMapMarker] = useState('')
 
     const handleSearch = (text) => {
         setSearchKeyword(text);
@@ -25,6 +27,8 @@ const HomeScreen = () => {
             
             {/* Mapview */}
             <MapViewComponent />
+
+            <BottomSheet />
         </View>
     )
 }

@@ -1,15 +1,13 @@
-import { StyleSheet } from 'react-native';
-
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createStackNavigator } from '@react-navigation/stack';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
 // screens
 import MyRentalListScreen from './screens/MyRentalListScreen';
 import LoginScreen from './screens/LoginScreen';
 import ManageBookingsScreen from './screens/ManageBookingsScreen';
-import RentalFromScreen from './screens/RentalFormScreen';
+import RentalFormScreen from './screens/RentalFormScreen';
+import MyRentalDetailsScreen from './screens/MyRentalDetailsScreen';
 
 // icons
 import { MaterialIcons } from '@expo/vector-icons';
@@ -17,9 +15,8 @@ import { AntDesign } from '@expo/vector-icons';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
-// const Stack = createNativeStackNavigator();
 
-export default function App() {
+const App = () => {
   return (
     <NavigationContainer>
       <StackNavigator />
@@ -27,23 +24,24 @@ export default function App() {
   );
 }
 
+export default App;
 
-function StackNavigator() {
+const StackNavigator = () => {
   return (
     <Stack.Navigator initialRouteName='Login'
       screenOptions={{
-        headerStyle: { backgroundColor: 'orangered' },
+        headerStyle: { backgroundColor: '#0064B1' },
         headerTintColor: '#fff',
         headerTitleStyle: { fontWeight: 'bold' },
-      }
-      }>
+      }}>
       <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="Home" component={TabNavigator} />
+      <Stack.Screen name="Home" component={TabNavigator} options={{ headerShown: false }}/>
+      <Stack.Screen name="RentalDetails" component={MyRentalDetailsScreen} />
     </Stack.Navigator>
   );
 }
 
-function TabNavigator() {
+const TabNavigator = () => {
   return (
     <Tab.Navigator screenOptions={({ navigation, route }) => ({
       tabBarIcon: ({ focused, color, size }) => {
@@ -57,23 +55,18 @@ function TabNavigator() {
           return <MaterialIcons name="manage-accounts" size={24} color={color} />
         }
       },
-      tabBarActiveTintColor: 'tomato',
+      tabBarActiveTintColor: '#0064B1',
       tabBarInactiveTintColor: 'gray',
+      headerStyle: {
+        backgroundColor: "#0064B1"
+      },
+      headerTintColor: "#fff"
     })}
     >
-      <Tab.Screen name="Rental Form" component={RentalFromScreen} />
-      <Tab.Screen name="Rental List" component={MyRentalListScreen} />
-      <Tab.Screen name="Manage Bookings" component={ManageBookingsScreen} />
+      <Tab.Screen name="Rental Form" component={RentalFormScreen} options={{ title: 'Rental Form' }}/>
+      <Tab.Screen name="Rental List" component={MyRentalListScreen} options={{ title: 'Rental List' }}/>
+      <Tab.Screen name="Manage Bookings" component={ManageBookingsScreen} options={{ title: 'Manage Bookings' }}/>
     </Tab.Navigator>
   );
 }
 
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
