@@ -88,14 +88,14 @@ const MyRentalListScreen = ({ navigation }) => {
     }
 
     // Function to navigate to details screen
-    // const goToDetailsScreen = (id) => {
-    //     navigation.push("Rental Details", { id }); // Pass any necessary data to details screen
-    // }
-
-    const goToDetailsScreen = () => {
-        // navigation.push("Rental Details"); // Pass any necessary data to details screen
-        navigation.navigate('RentalDetails')
+    const goToDetailsScreen = (id) => {
+        navigation.push("RentalDetails", { id }); // Pass any necessary data to details screen
     }
+
+    // const goToDetailsScreen = () => {
+    //     // navigation.push("Rental Details"); // Pass any necessary data to details screen
+    //     navigation.navigate('RentalDetails')
+    // }
 
     const ItemDivider = () => {
         return (
@@ -127,7 +127,7 @@ const MyRentalListScreen = ({ navigation }) => {
                 < FlatListComponent
                     data={myRentals}
                     renderItem={({ item }) => (
-                        <Pressable style={styles.listItem} onPress={() => goToDetailsScreen()}>
+                        <Pressable style={styles.listItem} onPress={() => goToDetailsScreen(item.id)}>
                             <View style={styles.listImage}>
                                 <Image source={{ uri: item.vehiclePhoto }} style={{ width: "40%", height: 100, marginVertical: 10, borderRadius: 10 }} />
                                 <View style={styles.listBody}>
