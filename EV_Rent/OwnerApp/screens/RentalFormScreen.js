@@ -8,9 +8,9 @@ import { collection, addDoc, updateDoc, deleteDoc, getDoc, doc } from "firebase/
 import DropDownPicker from 'react-native-dropdown-picker';
 import * as Location from "expo-location";
 
-const RentalFormScreen = ( {navigation, route} ) => {
+const RentalFormScreen = ({ navigation, route }) => {
 
-    const {email} = route.params
+    const { email } = route.params
     const [vehicles, setVehicles] = useState([]);
 
     //DropDownPicker
@@ -84,7 +84,7 @@ const RentalFormScreen = ( {navigation, route} ) => {
         console.log(email);
 
         let errorMessage = "";
-    
+
         if (!vehicleName.trim()) errorMessage += "Vehicle name is required.\n";
         if (!capacity.trim() || isNaN(capacity) || Number(capacity) <= 0) {
             errorMessage += "Capacity must be a positive number.\n";
@@ -100,7 +100,7 @@ const RentalFormScreen = ( {navigation, route} ) => {
             alert(`Please correct the following errors:\n${errorMessage}`);
             return; // Stop the form submission
         }
-    
+
         try {
             console.log(`Attempting to geocode: ${address}`)
             const geocodedLocation = await Location.geocodeAsync(address)
@@ -124,7 +124,7 @@ const RentalFormScreen = ( {navigation, route} ) => {
     const insertCar = async (latLng) => {
         console.log(`Submit button pressed`);
 
-        try{
+        try {
             const carToInsert = {
                 vehicleName: vehicleName,
                 vehiclePhoto: imageURL,
@@ -132,26 +132,45 @@ const RentalFormScreen = ( {navigation, route} ) => {
                 fuel: fuel,
                 type: type,
                 licensePlate: licensePlate,
-                pickupAddress: address,
-                price: price,
-                latLng: latLng
+                price: price, 
+                pickupLocation: {
+                    address: address,
+                    lat: latLng.lat,
+                    lng: latLng.lng,
+                },
+                owner: email
+                
             }
 
             console.log(`carToInsert : ${carToInsert}`);
 
-            //to add into independent collection
-            // const insertedDoc = await addDoc(collection(db, "employees"), employeeToInsert);
-            // console.log(`Employee added successfully : ${insertedDoc.id}`);
+            // Add the car document to the Vehicles collection
+            const vehicleDocRef = await addDoc(collection(db, "Vehicle"), carToInsert);
+            console.log(`Car added successfully with ID: ${vehicleDocRef.id}`);
 
-            //to add document to subcollection
-            const subCollectionRef = collection(db, "User", email, "Vehicle");
-            const insertedDoc = await addDoc(subCollectionRef, carToInsert);
-            console.log(`Car added successfully : ${insertedDoc.id}`);
+            // Retrieve the user document from Firestore
+            const userRef = doc(db, "User", email);
+            const userSnap = await getDoc(userRef);
+
+            // Check if the user exists
+            if (userSnap.exists()) {
+                // Update the user document to include the ID of the newly added car in its vehicle list
+                const userData = userSnap.data();
+                const updatedVehicles = userData.vehicles || [];
+                updatedVehicles.push(vehicleDocRef.id);
+
+                // Update the user document
+                await updateDoc(userRef, { vehicles: updatedVehicles });
+                console.log(`User document updated successfully.`);
+            } else {
+                console.error("User document does not exist.");
+            }
 
             // navigation.dispatch(StackActions.pop(1));
-            navigation.navigate('Rental List')
+            navigation.navigate('Rental List');
+            route.params?.updateRentalList?.();
 
-        }catch(err){
+        } catch (err) {
             console.error(`Error while saving document to collection : ${err}`);
         }
     }

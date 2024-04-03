@@ -16,6 +16,7 @@ const MyRentalListScreen = ({ navigation }) => {
     // state variable
     const [myRentals, setMyRentals] = useState([])
 
+
     useEffect(() => {
         console.log("My Rental List screen loaded")
 
@@ -56,6 +57,7 @@ const MyRentalListScreen = ({ navigation }) => {
         }
 
     }
+
 
     // func to delete all favourite videos from the db
     const deleteAllRentalListings = async (Vehicle) => {
@@ -102,6 +104,11 @@ const MyRentalListScreen = ({ navigation }) => {
             <View style={{ height: 1, width: "100%", backgroundColor: "#888" }} />
         )
     }
+
+    // Pass a callback function as a navigation parameter
+    const navigateToRentalForm = () => {
+        navigation.navigate('RentalForm', { updateRentalList: retrieveRentalsFromDB });
+    };
 
     // render the list
     return (
