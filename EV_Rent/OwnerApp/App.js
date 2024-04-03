@@ -1,6 +1,6 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { NavigationContainer, getFocusedRouteNameFromRoute } from '@react-navigation/native';
+import { NavigationContainer, useNavigation, getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
 // screens
 import MyRentalListScreen from './screens/MyRentalListScreen';
@@ -8,6 +8,10 @@ import LoginScreen from './screens/LoginScreen';
 import ManageBookingsScreen from './screens/ManageBookingsScreen';
 import RentalFormScreen from './screens/RentalFormScreen';
 import MyRentalDetailsScreen from './screens/MyRentalDetailsScreen';
+
+// import the auth variable
+import { auth } from './firebaseConfig';
+import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
 
 // icons
 import { MaterialIcons } from '@expo/vector-icons';
@@ -35,15 +39,22 @@ const StackNavigator = () => {
         headerTitleStyle: { fontWeight: 'bold' },
       }}>
       <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="Home" component={TabNavigator} options={{ headerShown: false }}/>
+      <Stack.Screen name="Home" component={TabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="RentalDetails" component={MyRentalDetailsScreen} />
     </Stack.Navigator>
   );
 }
 
 const TabNavigator = () => {
+
+  const navigation = useNavigation(); // Use the useNavigation hook to access navigation
+
   return (
     <Tab.Navigator screenOptions={({ navigation, route }) => ({
+      headerStyle: {
+        backgroundColor: "#0064B1",
+      },
+      headerTintColor: "#fff",
       tabBarIcon: ({ focused, color, size }) => {
         if (route.name == "Rental Form") {
           return <AntDesign name="form" size={24} color={color} />
@@ -63,9 +74,26 @@ const TabNavigator = () => {
       headerTintColor: "#fff"
     })}
     >
-      <Tab.Screen name="Rental Form" component={RentalFormScreen} options={{ title: 'Rental Form' }}/>
-      <Tab.Screen name="Rental List" component={MyRentalListScreen} options={{ title: 'Rental List' }}/>
-      <Tab.Screen name="Manage Bookings" component={ManageBookingsScreen} options={{ title: 'Manage Bookings' }}/>
+      <Tab.Screen name="Rental Form" component={RentalFormScreen} options={{
+        title: 'Rental Form', headerRight: () => (
+          <MaterialIcons
+            name="logout"
+            size={24}
+            color="white"
+            onPress={async () => {
+              try {
+                await signOut(auth)
+                alert("Logout complete!")
+                navigation.navigate('Login');
+              } catch (err) {
+                console.log(err)
+              }
+            }}
+          />
+        ),
+      }} />
+      <Tab.Screen name="Rental List" component={MyRentalListScreen} options={{ title: 'Rental List' }} />
+      <Tab.Screen name="Manage Bookings" component={ManageBookingsScreen} options={{ title: 'Manage Bookings' }} />
     </Tab.Navigator>
   );
 }

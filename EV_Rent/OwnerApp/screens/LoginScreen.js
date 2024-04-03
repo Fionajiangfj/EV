@@ -34,21 +34,6 @@ const LoginScreen = ({ navigation, route }) => {
 
     }
 
-    const onLogoutClicked = async () => {
-        try {
-            // 1. check if a user is currently logged in
-            if (auth.currentUser === null) {
-                alert("Sorry, no user is logged in.")
-            }
-            else {
-                await signOut(auth)
-                alert("Logout complete!")
-            }
-        } catch (err) {
-            console.log(err)
-        }
-    }
-
     return (
 
         <View style={styles.container}>
@@ -74,9 +59,6 @@ const LoginScreen = ({ navigation, route }) => {
 
             <Pressable style={styles.btn}>
                 <Text style={styles.btnLabel} onPress={onLoginClicked}>Login</Text>
-            </Pressable>
-            <Pressable style={styles.btn}>
-                <Text style={styles.btnLabel} onPress={onLogoutClicked}>Logout</Text>
             </Pressable>
 
         </View>
