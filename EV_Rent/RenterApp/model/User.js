@@ -29,3 +29,5 @@ class User{
         return new User(doc.id, data.email, data.password, data.role, data.name, data.photo, data.vehicle, data.booking);
     }
 }
+
+export { User };

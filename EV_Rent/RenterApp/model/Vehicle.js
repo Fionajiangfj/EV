@@ -1,37 +1,36 @@
 /* eslint-disable no-unused-vars */
 class Vehicle{
-    constructor(id, owner ,name, photo, capacity, color, license_plate, pickup_address, price, latitude, longitude){
+    constructor(id, fuel, owner ,vehicleName, vehiclePhoto, capacity, licensePlate, pickupLocation, price, type){
         this.id = id;
-        this.name = name;
+        this.fuel = fuel;
+        this.vehicleName = vehicleName;
         this.owner = owner;
-        this.photo = photo;
+        this.vehiclePhoto = vehiclePhoto;
         this.capacity = capacity;
-        this.color = color;
-        this.license_plate = license_plate;
-        this.pickup_address = pickup_address;
-        this.price = price
-        this.latitude = latitude;
-        this.longitude = longitude;
+        this.licensePlate = licensePlate;
+        this.pickupLocation = pickupLocation;
+        this.price = price;
+        this.type = type;
     }
 
     toJSON(){
         return {
             id: this.id,
-            name: this.name,
+            fuel: this.fuel,
+            vehicleName: this.vehicleName,
             owner: this.owner,
-            photo: this.photo,
+            vehiclePhoto: this.vehiclePhoto,
             capacity: this.capacity,
-            color: this.color,
-            license_plate: this.license_plate,
-            pickup_address: this.pickup_address,
+            licensePlate: this.licensePlate,
+            pickupLocation: this.pickupLocation,
             price: this.price,
-            latitude: this.latitude,
-            longitude: this.longitude
+            type: this.type
         }
     }
 
     static fromFirestore(doc){
         const data = doc.data();
-        return new Vehicle(doc.id, data.name, data.photo, data.owner, data.capacity, data.color, data.license_plate, data.pickup_address, data.price, data.latitude, data.longitude);
+        return new Vehicle(doc.id, data.fuel, data.owner, data.vehicleName, data.vehiclePhoto, data.capacity, data.licensePlate, data.pickupLocation, data.price, data.type);
     }
 }
+export { Vehicle };
