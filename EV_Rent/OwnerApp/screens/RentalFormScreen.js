@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { ScrollView, View, Text, TextInput, Button, StyleSheet, Picker, Image } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Button, Image, ScrollView, StyleSheet, Text, TextInput } from 'react-native';
 
 //db
+import { addDoc, collection, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
-import { collection, addDoc, updateDoc, deleteDoc, getDoc, doc } from "firebase/firestore";
 
-import DropDownPicker from 'react-native-dropdown-picker';
 import * as Location from "expo-location";
+import DropDownPicker from 'react-native-dropdown-picker';
 
 const RentalFormScreen = ({ navigation, route }) => {
 
@@ -22,13 +22,13 @@ const RentalFormScreen = ({ navigation, route }) => {
 
     //other form fields
     const [imageURL, setImageURL] = useState('');
-    const [capacity, setCapacity] = useState('');
+    const [capacity, setCapacity] = useState(0);
     const [fuel, setFuel] = useState('');
     const [type, setType] = useState('');
     const [licensePlate, setLicensePlate] = useState('');
     const [address, setAddress] = useState('');
     // const [latLng, setLatLng] = useState({ lat: null, lng: null });
-    const [price, setPrice] = useState('');
+    const [price, setPrice] = useState(0);
 
     useEffect(() => {
         const fetchVehicles = async () => {
@@ -112,6 +112,7 @@ const RentalFormScreen = ({ navigation, route }) => {
             console.log(result)
 
             insertCar({
+                address: address,
                 lat: result.latitude,
                 lng: result.longitude,
             });
@@ -121,7 +122,7 @@ const RentalFormScreen = ({ navigation, route }) => {
         }
     };
 
-    const insertCar = async (latLng) => {
+    const insertCar = async (pickupAddress) => {
         console.log(`Submit button pressed`);
 
         try {
@@ -133,11 +134,7 @@ const RentalFormScreen = ({ navigation, route }) => {
                 type: type,
                 licensePlate: licensePlate,
                 price: price, 
-                pickupLocation: {
-                    address: address,
-                    lat: latLng.lat,
-                    lng: latLng.lng,
-                },
+                pickupLocation: pickupAddress,
                 owner: email
                 
             }
@@ -208,7 +205,7 @@ const RentalFormScreen = ({ navigation, route }) => {
             <TextInput
                 style={styles.input}
                 onChangeText={setCapacity}
-                value={capacity}
+                value={String(capacity)}
                 keyboardType="numeric"
             />
 
@@ -237,7 +234,7 @@ const RentalFormScreen = ({ navigation, route }) => {
             <TextInput
                 style={styles.input}
                 onChangeText={setPrice}
-                value={price}
+                value={String(price)}
                 keyboardType="numeric"
             />
 

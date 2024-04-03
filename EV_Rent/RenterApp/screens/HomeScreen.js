@@ -8,16 +8,31 @@ import MapViewComponent from "../Components/MapView";
 
 const HomeScreen = () => {
     const [searchKeyword, setSearchKeyword] = useState('')
+    const [selectedVehicle, setSelectedVehicle] = useState(null) 
     // const [mapMarker, setMapMarker] = useState('')
+    const [isBottomSheetVisible, setIsBottomSheetVisible] = useState(false);
+    const handleOpenBottomSheet = () => {
+        setIsBottomSheetVisible(true);
+    };
+
 
     const [searchResults, setSearchResults] = useState([])
 
+    const handleCloseBottomSheet = () => {
+        setIsBottomSheetVisible(false);
+    };
+  
     const handleSearch = (text) => {
         setSearchKeyword(text);
         // Implement your search logic here
 
 
     };
+
+    const handleonMarkerPress = (vehicle) => {
+        setSelectedVehicle(vehicle)
+        handleOpenBottomSheet()
+    }
 
     return (
         <View style={styles.container}>
@@ -30,9 +45,9 @@ const HomeScreen = () => {
             inputStyle={{ color: 'black' }}/> 
             
             {/* Mapview */}
-            <MapViewComponent />
+            <MapViewComponent onMarkerPress={handleonMarkerPress}/>
 
-            <BottomSheet />
+            <BottomSheet isVisible={isBottomSheetVisible} onClose={handleCloseBottomSheet} vehicle={selectedVehicle}/>
         </View>
     )
 }

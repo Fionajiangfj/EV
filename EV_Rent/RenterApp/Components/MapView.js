@@ -1,31 +1,30 @@
+/* eslint-disable react/prop-types */
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { VehicleController } from '../controller/VehicleController';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons'; // Or any other icon set
+import { vehicleController } from '../controller/VehicleController';
 
 // map imports
 import * as Location from "expo-location";
 import MapView, { Marker } from "react-native-maps";
 
-const MapViewComponent = () => {
+const MapViewComponent = ({ onMarkerPress }) => {
 
     const [deviceLocation, setDeviceLocation] = useState(null);
     const [currRegion, setCurrRegion] = useState(null);
     const [currCoord, setCurrCoord] = useState({});
     const [vehicles, setVehicles] = useState([]);
-    const [selectedVehicle, setSelectedVehicle] = useState(null);
-    const bottomSheetRef = useRef(null);
 
     useEffect(() => {
         getCurrentLocation();
 
-        async function fetchVehicles() {
-            const vehicles = await VehicleController.fetchVehicles();
-            console.log(vehicles);
+        vehicleController.fetchVehicles((error,vehicles) => {
+            if (error) {
+                console.error("failed fetching vehicles: ", error);
+                return;
+            }
             setVehicles(vehicles);
-
-        }
-
-        fetchVehicles();
+        })
     }, []);
 
     // Function to fetch current location and set it as initial region
@@ -77,9 +76,9 @@ const MapViewComponent = () => {
 
 
     // func for bottom sheet
-    const onMarkerPress = (vehicle) => {
-        setSelectedVehicle(vehicle);
-        bottomSheetRef.current?.expand();
+    const markerPressed = (vehicle) => {
+        console.log("Selected vehicle: ", vehicle);
+        onMarkerPress(vehicle);
     };
 
     return (
@@ -95,13 +94,24 @@ const MapViewComponent = () => {
                 {vehicles.map(vehicle => (
                     <Marker
                         key={vehicle.id}
-                        coordinate={{ latitude: vehicle.latitude, longitude: vehicle.longitude }}
+                        coordinate={{ latitude: vehicle.pickupLocation.lat, longitude: vehicle.pickupLocation.lng }}
                         title={vehicle.name}
-                        onPress={() => onMarkerPress(vehicle)}
+                        onPress={() => markerPressed(vehicle)}
                     >
-                        <Text>Hii</Text>
+                        <View style={styles.customMarker}>
+                            <Text style={styles.markerText}>${vehicle.price}</Text>
+                        </View>
                     </Marker>
                 ))}
+
+                {deviceLocation && (
+                    <Marker
+                    coordinate={deviceLocation}
+                    title="My Location"
+                    >
+                        <Icon name="map-marker" size={30} color="#3498db" />
+                    </Marker>
+                )}
 
             </MapView>
 
@@ -121,6 +131,20 @@ const styles = StyleSheet.create({
         height: "70%",
         width: "100%",
         marginTop: 15,
+    },
+    customMarker: {
+        backgroundColor: "#808080", // Marker background color
+        paddingVertical: 5, // Vertical padding for the marker
+        paddingHorizontal: 10, // Horizontal padding for the marker
+        borderRadius: 5, // Marker border radius for rounded corners
+        borderColor: "#fff", // Border color
+        borderWidth: 1, // Border width
+        alignItems: 'center', // Center the text horizontally
+        justifyContent: 'center', // Center the text vertically
+    },
+    markerText: {
+        color: "#fff", // Text color
+        fontWeight: 'bold', // Bold text
     },
     marker: {
         backgroundColor: "#fff",
