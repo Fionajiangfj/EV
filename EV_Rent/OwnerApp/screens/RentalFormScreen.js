@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Image, ScrollView, StyleSheet, Text, TextInput } from 'react-native';
 
 //db
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 
 import * as Location from "expo-location";
