@@ -1,24 +1,23 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import LoginScreen from '../RenterApp/screens/LoginScreen';
+import { NavigationContainer } from '@react-navigation/native';
+import React from 'react';
 
+// icons
+import { createStackNavigator } from '@react-navigation/stack';
+import LoginScreen from './screens/LoginScreen';
+import MainScreen from './screens/MainScreen';
+
+const Stack = createStackNavigator();
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Renter App</Text>
 
-      <LoginScreen />
+    <NavigationContainer>
+      <Stack.Navigator> 
+        <Stack.Screen name="Main" component={MainScreen} />
+        <Stack.Screen name="Login" component={LoginScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
 
-      <StatusBar style="auto" />
-    </View>
+    
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
