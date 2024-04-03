@@ -1,8 +1,6 @@
-import { useState } from "react";
-import { View, StyleSheet, Text, FlatList, Pressable } from "react-native"
-import Icon from 'react-native-vector-icons/FontAwesome5';
-import { ListItem, SearchBar } from "react-native-elements"; 
-
+import React, { useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { SearchBar } from "react-native-elements";
 // import BottomSheet from "../Components/BottomSheet";
 import MapViewComponent from "../Components/MapView";
 
@@ -27,7 +25,6 @@ const HomeScreen = () => {
             
             {/* Mapview */}
             <MapViewComponent />
-           
         </View>
     )
 }
