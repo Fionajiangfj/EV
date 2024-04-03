@@ -10,9 +10,13 @@ const HomeScreen = () => {
     const [searchKeyword, setSearchKeyword] = useState('')
     // const [mapMarker, setMapMarker] = useState('')
 
+    const [searchResults, setSearchResults] = useState([])
+
     const handleSearch = (text) => {
         setSearchKeyword(text);
         // Implement your search logic here
+
+
     };
 
     return (
