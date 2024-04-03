@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import {View, Text, TextInput, StyleSheet, Pressable} from 'react-native';
+import { View, Text, TextInput, StyleSheet, Pressable } from 'react-native';
 
 // import the auth variable
 import { auth } from '../firebaseConfig';
@@ -13,7 +13,7 @@ const LoginScreen = ({ navigation, route }) => {
 
     const onLoginClicked = async () => {
         //verify credentials
-        try {            
+        try {
             const userCredential = await signInWithEmailAndPassword(auth, usernameFromUI, passwordFromUI)
             // who is the current user?
             console.log("Who is the currently logged in user")
@@ -21,14 +21,17 @@ const LoginScreen = ({ navigation, route }) => {
             // alert(`Login success! ${auth.currentUser.uid}`)
 
 
-            navigation.replace('Home');
+            navigation.replace('Home', {
+                screen: 'Rental Form',
+                params: { email: usernameFromUI },
+            });
 
 
-        } catch(err) {
+        } catch (err) {
             console.log(err)
         }
-        
-        
+
+
     }
 
     const onLogoutClicked = async () => {
@@ -37,7 +40,7 @@ const LoginScreen = ({ navigation, route }) => {
             if (auth.currentUser === null) {
                 alert("Sorry, no user is logged in.")
             }
-            else {                
+            else {
                 await signOut(auth)
                 alert("Logout complete!")
             }
@@ -46,17 +49,17 @@ const LoginScreen = ({ navigation, route }) => {
         }
     }
 
-    return(
-        
+    return (
+
         <View style={styles.container}>
-            <Text style={styles.headerText}> 
-            Login Screen</Text>
+            <Text style={styles.headerText}>
+                Login Screen</Text>
 
             <TextInput
                 style={styles.tb}
                 placeholder="peter@gmail.com"
                 textContentType="emailAddress"
-                autoCapitalize="none"                
+                autoCapitalize="none"
                 value={usernameFromUI}
                 onChangeText={setUsernameFromUI}
             />
@@ -64,7 +67,7 @@ const LoginScreen = ({ navigation, route }) => {
                 style={styles.tb}
                 placeholder="Enter your password"
                 secureTextEntry={true}
-                autoCapitalize="none"                
+                autoCapitalize="none"
                 value={passwordFromUI}
                 onChangeText={setPasswordFromUI}
             />
@@ -75,45 +78,45 @@ const LoginScreen = ({ navigation, route }) => {
             <Pressable style={styles.btn}>
                 <Text style={styles.btnLabel} onPress={onLogoutClicked}>Logout</Text>
             </Pressable>
-            
+
         </View>
     );
 }
 
-const styles = StyleSheet.create({   
+const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
-        padding:20,
-      }, 
+        padding: 20,
+    },
     btn: {
-        borderWidth:1,
-        borderColor:"#141D21",
-        borderRadius:8,
-        paddingVertical:16,
-        marginVertical:10
-    }, 
+        borderWidth: 1,
+        borderColor: "#141D21",
+        borderRadius: 8,
+        paddingVertical: 16,
+        marginVertical: 10
+    },
     btnLabel: {
-        fontSize:16,
-        textAlign:"center"
-    }, 
+        fontSize: 16,
+        textAlign: "center"
+    },
     tb: {
-        width:"100%",   
-        borderRadius:5,
-        backgroundColor:"#efefef",
-        color:"#333",
-        fontWeight:"bold", 
-        paddingHorizontal:10,
-        paddingVertical:15,
-        marginVertical:10,       
+        width: "100%",
+        borderRadius: 5,
+        backgroundColor: "#efefef",
+        color: "#333",
+        fontWeight: "bold",
+        paddingHorizontal: 10,
+        paddingVertical: 15,
+        marginVertical: 10,
     },
     formLabel: {
-        fontSize:16,
+        fontSize: 16,
     },
     headerText: {
-        fontSize:20, 
-        fontWeight:"bold", 
-        marginVertical:10
+        fontSize: 20,
+        fontWeight: "bold",
+        marginVertical: 10
     }
 });
 
