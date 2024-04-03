@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ScrollView, View, Text, TextInput, Button, StyleSheet, Picker, Image } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
+import * as Location from "expo-location";
 
 const RentalFormScreen = () => {
 
@@ -20,6 +21,7 @@ const RentalFormScreen = () => {
     const [type, setType] = useState('');
     const [licensePlate, setLicensePlate] = useState('');
     const [address, setAddress] = useState('');
+    const [latLng, setLatLng] = useState({ lat: null, lng: null });
     const [price, setPrice] = useState('');
 
     useEffect(() => {
@@ -44,18 +46,6 @@ const RentalFormScreen = () => {
 
         fetchVehicles();
     }, []);
-
-    // const handleVehicleChange = (itemValue, itemIndex) => {
-    //     console.log("Selected index:", itemIndex); // Debug index
-    //     setSelectedVehicleIndex(itemIndex);
-    //     const selectedVehicle = vehicles[itemIndex];
-    //     console.log("Selected vehicle:", selectedVehicle);
-    //     setVehicleName(`${selectedVehicle.make} ${selectedVehicle.model} ${selectedVehicle.trim}`);
-    //     setCapacity(selectedVehicle?.capacity?.toString() || '');
-    //     setFuel(selectedVehicle?.fuel?.toString() || '');
-    //     setType(selectedVehicle?.type?.toString() || '')
-
-    // };
 
     const handleVehicleChange = (combinedValue) => {
         // const selectedVehicle = vehicles.find(vehicle => vehicle.make === vehicleMake);
@@ -82,17 +72,57 @@ const RentalFormScreen = () => {
         }
     };
 
-    // Placeholder function for adding a photo
-    const handleAddPhoto = () => {
-        // Here, you would integrate your photo selection logic
-        alert('Add photo logic goes here.');
+    // Placeholder function for form submission
+    const handleSubmit = async () => {
+        let errorMessage = "";
+    
+        // Validate vehicle name
+        if (!vehicleName.trim()) errorMessage += "Vehicle name is required.\n";
+    
+        // Validate capacity (example: must be a number greater than 0)
+        if (!capacity.trim() || isNaN(capacity) || Number(capacity) <= 0) {
+            errorMessage += "Capacity must be a positive number.\n";
+        }
+    
+        // Validate fuel type (example: must not be empty)
+        if (!fuel.trim()) errorMessage += "Fuel type is required.\n";
+    
+        // Validate type (example: must not be empty)
+        if (!type.trim()) errorMessage += "Vehicle type is required.\n";
+    
+        // Validate street (example: must not be empty)
+        if (!address.trim()) errorMessage += "Address is required.\n";
+    
+        // Validate price (example: must be a number and not negative)
+        if (!price.trim() || isNaN(price) || Number(price) < 0) {
+            errorMessage += "Price must be a non-negative number.\n";
+        }
+    
+        // Show error messages if any validations failed
+        if (errorMessage) {
+            alert(`Please correct the following errors:\n${errorMessage}`);
+            return; // Stop the form submission
+        }
+    
+        try {
+            console.log(`Attempting to geocode: ${address}`)
+            const geocodedLocation = await Location.geocodeAsync(address)
+            const result = geocodedLocation[0]
+            if (result === undefined) {
+                alert("No coordinates found")
+                return
+            }
+            console.log(result)           
+            alert(JSON.stringify(result))
+            // update state variable to an object that contains the lat/lng
+            // (alternatively you could have created 2 separate state variables)
+            setLatLng({lat: result.latitude, lng: result.longitude})
+
+        } catch (err) {
+            console.log(err)
+        }
     };
 
-    // Placeholder function for form submission
-    const handleSubmit = () => {
-        // Here, you would integrate your form submission logic
-        alert('Form submission logic goes here.');
-    };
 
     return (
         <ScrollView style={styles.container}>
@@ -112,10 +142,6 @@ const RentalFormScreen = () => {
                 zIndex={3000} // Ensure dropdown covers other components
                 zIndexInverse={1000}
             />
-            {/* <Button
-                title="Add Vehicle Photo"
-                onPress={handleAddPhoto}
-            /> */}
 
             {
                 imageURL !== '' && (
@@ -155,19 +181,19 @@ const RentalFormScreen = () => {
                 value={licensePlate}
             />
 
-            <Text style={styles.label}>Address:</Text>
-            <TextInput
-                style={styles.input}
-                onChangeText={setAddress}
-                value={address}
-            />
-
             <Text style={styles.label}>Price:</Text>
             <TextInput
                 style={styles.input}
                 onChangeText={setPrice}
                 value={price}
                 keyboardType="numeric"
+            />
+
+            <Text style={styles.label}>Address:</Text>
+            <TextInput
+                style={styles.input}
+                onChangeText={setAddress}
+                value={address}
             />
 
             <Button
@@ -196,9 +222,9 @@ const styles = StyleSheet.create({
         borderRadius: 5,
     },
     carImage: {
-        width: 100,  
-        height: 100, 
-        resizeMode: 'contain' 
+        width: 100,
+        height: 100,
+        resizeMode: 'contain'
     },
 });
 
