@@ -1,9 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { VehicleController } from '../controller/VehicleController';
+
 // map imports
 import * as Location from "expo-location";
 import MapView, { Marker } from "react-native-maps";
+
 const MapViewComponent = () => {
 
     const [deviceLocation, setDeviceLocation] = useState(null);
@@ -12,7 +14,10 @@ const MapViewComponent = () => {
     const [vehicles, setVehicles] = useState([]);
     const [selectedVehicle, setSelectedVehicle] = useState(null);
     const bottomSheetRef = useRef(null);
+
     useEffect(() => {
+        getCurrentLocation();
+
         async function fetchVehicles() {
             const vehicles = await VehicleController.fetchVehicles();
             console.log(vehicles);
@@ -22,6 +27,7 @@ const MapViewComponent = () => {
 
         fetchVehicles();
     }, []);
+
     // Function to fetch current location and set it as initial region
     const getCurrentLocation = async () => {
         try {
@@ -69,9 +75,6 @@ const MapViewComponent = () => {
     //     mapRef.current.animateCamera({ center: deviceLocation }, 2000);
     // };
 
-    useEffect(() => {
-        getCurrentLocation();
-    }, []);
 
     // func for bottom sheet
     const onMarkerPress = (vehicle) => {
@@ -99,7 +102,9 @@ const MapViewComponent = () => {
                         <Text>Hii</Text>
                     </Marker>
                 ))}
+
             </MapView>
+
         </View>
     );
 };
@@ -112,7 +117,8 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     map: {
-        height: "85%",
+        // height: "85%",
+        height: "70%",
         width: "100%",
         marginTop: 15,
     },
