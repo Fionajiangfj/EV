@@ -1,9 +1,11 @@
 import { StyleSheet } from 'react-native';
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
+
 
 // screens
 import MyRentalListScreen from './screens/MyRentalListScreen';
@@ -13,6 +15,7 @@ import RentalFromScreen from './screens/RentalFormScreen';
 
 // icons
 import { MaterialIcons } from '@expo/vector-icons';
+
 import { AntDesign } from '@expo/vector-icons';
 
 const Tab = createBottomTabNavigator();
@@ -23,6 +26,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <StackNavigator />
+
     </NavigationContainer>
   );
 }
