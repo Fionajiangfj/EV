@@ -105,7 +105,7 @@ import ButtonComponent from "../Components/ButtonComponent";
 
 //         }
 //     }
-
+                         
 
 
 //     return(
@@ -139,7 +139,7 @@ import ButtonComponent from "../Components/ButtonComponent";
 //     )
 // }
 
-const MyRentalListScreen = ({ navigation, route }) => {
+const MyRentalListScreen = ({ navigation }) => {
     // data source for the list. Objects must contain an id or key property.
     const friendsList = [{ id: 33, name: "Marie" }, { id: 50, name: "Sasha" }, { id: 100, name: "Cornelius" }];
 
@@ -150,45 +150,49 @@ const MyRentalListScreen = ({ navigation, route }) => {
         console.log("My Rental List screen loaded")
 
         // Move all the database fetch & state update code into the useEffect
-        retrieveRentalsFromDB()
+        // retrieveRentalsFromDB()
     }, [])
 
     // func to retrieve favourite videos from the db
-    const retrieveRentalsFromDB = async () => {
+    // const retrieveRentalsFromDB = async () => {
 
-        try {
-            // request data from favourite_videos collection
-            const querySnapshot = await getDocs(collection(db, "my_rentals"));
+    //     try {
+    //         // request data from favourite_videos collection
+    //         const querySnapshot = await getDocs(collection(db, "my_rentals"));
 
-            const resultsFromFirestore = []
+    //         const resultsFromFirestore = []
 
-            querySnapshot.forEach((doc) => {
-                console.log(doc.id, " => ", doc.data());
-                // make the object to add to the array
-                const itemToAdd = {
-                    id: doc.id,
-                    ...doc.data()
-                }
-                // append to array
-                resultsFromFirestore.push(itemToAdd)
-            });
+    //         querySnapshot.forEach((doc) => {
+    //             console.log(doc.id, " => ", doc.data());
+    //             // make the object to add to the array
+    //             const itemToAdd = {
+    //                 id: doc.id,
+    //                 ...doc.data()
+    //             }
+    //             // append to array
+    //             resultsFromFirestore.push(itemToAdd)
+    //         });
 
-            console.log("array data...")
-            console.log(resultsFromFirestore)
+    //         console.log("array data...")
+    //         console.log(resultsFromFirestore)
 
-            // save data to a state variable
-            // when the state variable updates, the list will auto update
-            setMyRentals(resultsFromFirestore)
-        }
-        catch (err) {
-            console.log(err.message)
-        }
+    //         // save data to a state variable
+    //         // when the state variable updates, the list will auto update
+    //         setMyRentals(resultsFromFirestore)
+    //     }
+    //     catch (err) {
+    //         console.log(err.message)
+    //     }
 
-    }
+    // }
 
     // Function to navigate to details screen
-    const goToDetailsScreen = (id) => {
-        navigation.navigate("Rental Details", { id }); // Pass any necessary data to details screen
+    // const goToDetailsScreen = (id) => {
+    //     navigation.push("Rental Details", { id }); // Pass any necessary data to details screen
+    // }
+    const goToDetailsScreen = () => {
+        // navigation.push("Rental Details"); // Pass any necessary data to details screen
+        navigation.navigate('RentalDetails')
     }
 
     const ItemDivider = () => {
@@ -221,7 +225,7 @@ const MyRentalListScreen = ({ navigation, route }) => {
                 <FlatListComponent
                     data={friendsList}
                     renderItem={({ item }) => (
-                        <Pressable style={styles.listItem} onPress={() => goToDetailsScreen(item.id)}>
+                        <Pressable style={styles.listItem} onPress={() => goToDetailsScreen()}>
                             <Text style={styles.listTitle}>{item.name}</Text>
                         </Pressable>
                     )}
