@@ -95,7 +95,9 @@ const MapViewComponent = () => {
                         coordinate={{ latitude: vehicle.latitude, longitude: vehicle.longitude }}
                         title={vehicle.name}
                         onPress={() => onMarkerPress(vehicle)}
-                    />
+                    >
+                        <Text>Hii</Text>
+                    </Marker>
                 ))}
             </MapView>
         </View>

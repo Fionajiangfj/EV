@@ -6,7 +6,7 @@ import MapViewComponent from "../Components/MapView";
 
 const HomeScreen = () => {
     const [searchKeyword, setSearchKeyword] = useState('')
-    const [mapMarker, setMapMarker] = useState('')
+    // const [mapMarker, setMapMarker] = useState('')
 
     const handleSearch = (text) => {
         setSearchKeyword(text);

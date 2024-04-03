@@ -25,4 +25,4 @@ const db = getFirestore(app);
 // Export firestore database so the rest of the app can access
 const auth = getAuth(app)
 
-export {db, auth}
+export {db, auth, app}
