@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, Image } from "react-native";
 import { useState, useEffect } from "react";
-import {StackActions} from '@react-navigation/native';
+import { StackActions } from '@react-navigation/native';
 
 // components
 import ButtonComponent from "../Components/ButtonComponent";
@@ -25,18 +25,20 @@ const MyRentalDetailsScreen = ({ navigation, route }) => {
     const buttonPressed = async () => {
         console.log("Button Pressed!!!")
 
-        try{
+        try {
             const docRef = doc(db, "Vehicle", id);
             await deleteDoc(docRef);
             console.log(`Document with id ${id} successfully deleted`);
             alert("Deleted successfully!")
             navigation.dispatch(StackActions.pop(1));
-        }catch(err){
+        } catch (err) {
             console.error(`Error while deleting document to collection : ${err}`);
         }
-        
-        
     }
+
+    // const editBtnPressed = async () => {
+    //     console.log(`Edit button pressed.`);
+    // }
 
     const getSelectedVehicleDataFromDB = async () => {
 
@@ -107,12 +109,22 @@ const MyRentalDetailsScreen = ({ navigation, route }) => {
                 justifyContent={"center"}
                 bgColor={"#0064B1"}
             /> */}
+
+            {/* <ButtonComponent
+                onPress={editBtnPressed}
+                text={"Edit"}
+                justifyContent={"center"}
+                bgColor={"#FF0000"}
+            /> */}
+
             <ButtonComponent
                 onPress={buttonPressed}
                 text={"Delete"}
                 justifyContent={"center"}
                 bgColor={"#FF0000"}
             />
+
+
 
         </View>
     );
