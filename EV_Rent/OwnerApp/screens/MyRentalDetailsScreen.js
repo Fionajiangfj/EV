@@ -7,7 +7,7 @@ import ButtonComponent from "../Components/ButtonComponent";
 
 // firestore
 import { db } from "../firebaseConfig";
-import { collection, doc, getDoc, deleteDoc } from "firebase/firestore";
+import { collection, doc, getDoc, deleteDoc, updateDoc, arrayRemove } from "firebase/firestore";
 
 
 const MyRentalDetailsScreen = ({ navigation, route }) => {
@@ -21,20 +21,43 @@ const MyRentalDetailsScreen = ({ navigation, route }) => {
     useEffect(() => {
         getSelectedVehicleDataFromDB()
     }, [])
-
+    
     const buttonPressed = async () => {
         console.log("Button Pressed!!!")
-
+    
         try {
             const docRef = doc(db, "Vehicle", id);
-            await deleteDoc(docRef);
-            console.log(`Document with id ${id} successfully deleted`);
-            alert("Deleted successfully!")
-            navigation.dispatch(StackActions.pop(1));
+            const documentSnapshot = await getDoc(docRef);
+            
+            if (documentSnapshot.exists()) {
+                // Get the owner of the vehicle
+                const owner = documentSnapshot.data().owner;
+                console.log("Owner:", owner);
+                
+                // Remove the vehicle reference from the user's document
+                const userRef = doc(db, "User", owner);
+                console.log("User Ref:", userRef.path);
+                
+                await updateDoc(userRef, {
+                    vehicles: arrayRemove(id)
+                });
+                console.log("Vehicle removed from user's vehicles array");
+                
+                // Delete the vehicle document
+                await deleteDoc(docRef);
+                
+                console.log(`Document with id ${id} successfully deleted`);
+                alert("Deleted successfully!")
+                navigation.dispatch(StackActions.pop(1));
+            } else {
+                console.log("No such document!");
+            }
         } catch (err) {
-            console.error(`Error while deleting document to collection : ${err}`);
+            console.error(`Error while deleting document from collection : ${err}`);
         }
     }
+
+    
 
     const editBtnPressed = () => {
         console.log(`Edit button pressed.`);
@@ -117,8 +140,6 @@ const MyRentalDetailsScreen = ({ navigation, route }) => {
                     bgColor={"#FF0000"}
                 />
             </View>
-
-
 
         </View>
     );

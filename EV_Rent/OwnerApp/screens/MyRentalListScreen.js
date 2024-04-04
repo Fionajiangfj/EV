@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 // 1. Import the db variable from firebaseConfig
-import { db } from '../firebaseConfig';
+import { db, auth } from '../firebaseConfig';
+import { collection, getDocs, deleteDoc, doc, updateDoc, arrayRemove } from "firebase/firestore";
 
-// 2. Import the relevant functions from firestore
-import { collection, getDocs } from "firebase/firestore";
+// 2. Import the components
 import ButtonComponent from "../Components/ButtonComponent";
 import FlatListComponent from "../Components/FlatListComponent";
 
@@ -25,68 +25,100 @@ const MyRentalListScreen = ({ navigation }) => {
         return unsubscribe;
     }, [navigation])
 
-    // func to retrieve favourite videos from the db
     const retrieveRentalsFromDB = async () => {
-
         try {
-
-            // request data from favourite_videos collection
-            const querySnapshot = await getDocs(collection(db, "Vehicle"));
-
-            const resultsFromFirestore = []
-
-            querySnapshot.forEach((doc) => {
-                console.log(doc.id, " => ", doc.data());
-                // make the object to add to the array
-                const itemToAdd = {
-                    id: doc.id,
-                    ...doc.data()
-                }
-                // append to array
-                resultsFromFirestore.push(itemToAdd)
-            });
-
-            console.log(resultsFromFirestore)
-
-            // save data to a state variable
-            // when the state variable updates, the list will auto update
-            setMyRentals(resultsFromFirestore)
+            // Get the currently logged-in user
+            const user = auth.currentUser;
+            
+            if (user) {
+                const currentUserEmail = user.email; // Get the email of the current user
+    
+                // Request data from the Vehicle collection
+                const querySnapshot = await getDocs(collection(db, "Vehicle"));
+    
+                const resultsFromFirestore = [];
+    
+                // Iterate through the documents
+                querySnapshot.forEach((doc) => {
+                    const vehicleData = doc.data();
+                    
+                    // Check if the vehicle belongs to the current user
+                    if (vehicleData.owner === currentUserEmail) {
+                        const itemToAdd = {
+                            id: doc.id,
+                            ...vehicleData
+                        };
+    
+                        resultsFromFirestore.push(itemToAdd);
+                    }
+                });
+    
+                // Save data to the state variable
+                setMyRentals(resultsFromFirestore);
+            } else {
+                console.log("No user logged in.");
+                // Handle the case where no user is logged in, if needed
+            }
+        } catch (err) {
+            console.log(err.message);
         }
-        catch (err) {
-            console.log(err.message)
-        }
+    };
 
-    }
 
-    // func to delete all favourite videos from the db
-    const deleteAllRentalListings = async (Vehicle) => {
-
-        console.log("Delete all rental vehicles button pressed!")
-
+    // func to delete all rental vehicles of the logged-in user
+    const deleteAllRentalListings = async () => {
+        console.log("Delete all rental vehicles button pressed!");
+    
         try {
-            // Get a reference to the collection
-            const collectionRef = collection(db, Vehicle);
-
-            // Retrieve all documents from the collection
-            const querySnapshot = await getDocs(collectionRef);
-
-            // Iterate through the documents and delete each one
-            querySnapshot.forEach(async (doc) => {
-                await deleteDoc(doc.ref);
-                console.log(`Document with ID ${doc.id} deleted successfully`);
-            });
-
-            console.log(`All documents deleted from collection ${Vehicle}`);
-
-            // Re-fetch data after deletion
-            retrieveRentalsFromDB();
-
-            // alert msg
-            alert("All rental vehicles deleted successfully!")
+            // Get the currently logged-in user
+            const user = auth.currentUser;
+    
+            if (user) {
+                const currentUserEmail = user.email; // Get the email of the current user
+    
+                // Get a reference to the user's document
+                const userDocRef = doc(db, "User", currentUserEmail);
+    
+                // Retrieve all vehicles from the Vehicle collection that belong to the current user
+                const querySnapshot = await getDocs(collection(db, "Vehicle"));
+    
+                // Array to store promises for updating user documents
+                const updatePromises = [];
+    
+                // Iterate through the vehicles and delete each one that belongs to the current user
+                querySnapshot.forEach(async (doc) => {
+                    if (doc.data().owner === currentUserEmail) {
+                        // Delete the vehicle document
+                        await deleteDoc(doc.ref);
+                        console.log(`Document with ID ${doc.id} deleted successfully`);
+                        
+                        // Add the promise for updating user document to array
+                        updatePromises.push(updateDoc(userDocRef, {
+                            vehicles: arrayRemove(doc.id)
+                        }));
+                        console.log(`Vehicle ID ${doc.id} removed from user's vehicles array`);
+                    }
+                });
+    
+                // Wait for all promises to resolve
+                await Promise.all(updatePromises);
+    
+                console.log("All rental vehicles of the logged-in user deleted successfully!");
+    
+                // Re-fetch data after deletion
+                retrieveRentalsFromDB();
+    
+                // alert msg
+                alert("All rental vehicles deleted successfully!");
+            } else {
+                console.log("No user logged in.");
+                // Handle the case where no user is logged in, if needed
+            }
         } catch (error) {
-            console.error("Error deleting documents: ", error);
+            console.error("Error deleting rental vehicles: ", error);
         }
     }
+
 
     // Function to navigate to details screen
     const goToDetailsScreen = (id) => {
