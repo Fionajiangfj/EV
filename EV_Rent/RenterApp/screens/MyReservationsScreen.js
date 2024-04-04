@@ -34,7 +34,11 @@ const MyReservationsScreen = ({ navigation }) => {
     }, []);
 
     const goToBookingDetailsScreen = (booking) => {
-        navigation.push("BookingDetails", { booking });
+        const bookingString = JSON.stringify({
+            ...booking,
+            bookingDate: booking.bookingDate.toISOString() // Convert Date to ISO string
+        });
+        navigation.push("BookingDetails", { booking: bookingString });
     }
 
     const renderBookingItem = ({ item }) => (

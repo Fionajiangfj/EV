@@ -1,51 +1,51 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
 import ButtonComponent from "../Components/ButtonComponent";
-import { bookingController } from '../controller/BookingController';
-import { vehicleController } from '../controller/VehicleController';
 
 const MyBookedVehicleDetailsScreen = ({ route, navigation }) => {
 
     const { booking } = route.params;
+    const selectedBooking = JSON.parse(booking); // Parse the string back to an object
+    const bookingDate = new Date(selectedBooking.bookingDate); // Convert ISO string to Date object
 
-    // Convert ISO string to Date object
-    const bookingDate = new Date(booking.bookingDate); 
-    // Format the date and time
-const formattedDate = bookingDate.toLocaleString('en-US', {
-    month: 'long', // Full month name
-    day: 'numeric', // Day of the month
-    year: 'numeric', // Full year
-    hour: 'numeric', // 12-hour format
-    minute: 'numeric', // Minutes
-    second: 'numeric', // Seconds
-    hour12: true // 12-hour time format (AM/PM)
-});
 
     // state variables
-    const [selectedBooking, setSelectedBooking] = useState(booking);
+    const [selectedBookingInfo, setSelectedBookingInfo] = useState(selectedBooking);
 
     const buttonPressed = () => {
         console.log("Button Pressed!!!")
         navigation.goBack();
     }
 
+    useEffect(() => {
+        console.log(`selected booking info: ${selectedBookingInfo.bookingDate} ${selectedBookingInfo.status}`)
+    }, [])
+
     return (
 
         <View style={styles.detailContainer}>
-            <Image source={{ uri: selectedBooking.vehicle.vehiclePhoto }} style={{ width: "100%", height: 250 }} />
+            <Image source={{ uri: selectedBookingInfo.vehicle.vehiclePhoto }} style={{ width: "100%", height: 250 }} />
             <View style={styles.detailHeader}>
-                <Text style={styles.rentalTitle}>{selectedBooking.vehicle.vehicleName}</Text>
-                <Text style={styles.rentalPrice}>${selectedBooking.vehicle.price}</Text>
+                <Text style={styles.rentalTitle}>{selectedBookingInfo.vehicle.vehicleName}</Text>
+                <Text style={styles.rentalPrice}>${selectedBookingInfo.vehicle.price}</Text>
             </View>
-            <Text style={styles.rentalAddress}>{selectedBooking.vehicle.pickupLocation?.address}</Text>
-            <Text style={styles.detailText}>License Plate number: {selectedBooking.vehicle.licensePlate}</Text>
-            <Text style={styles.detailText}>Seat Capacity: {selectedBooking.vehicle.capacity} seats</Text>
-            <Text style={styles.detailText}>Fuel: {selectedBooking.vehicle.fuel}</Text>
-            <Text style={styles.detailText}>Type: {selectedBooking.vehicle.type}</Text>
-            <Text style={styles.detailText}>Owner: {selectedBooking.vehicle.owner}</Text>
-            <Text style={styles.detailText}>Status: {selectedBooking.status}</Text>
-            <Text style={styles.detailText}>Date: {formattedDate}</Text>
-            {selectedBooking.status === 'confirmed' && <Text style={styles.detailText}>Confirmation Code: {selectedBooking.confirmationCode}</Text>}
+            <Text style={styles.rentalAddress}>{selectedBookingInfo.vehicle.pickupLocation?.address}</Text>
+            <Text style={styles.detailText}>License Plate number: {selectedBookingInfo.vehicle.licensePlate}</Text>
+            <Text style={styles.detailText}>Seat Capacity: {selectedBookingInfo.vehicle.capacity} seats</Text>
+            <Text style={styles.detailText}>Fuel: {selectedBookingInfo.vehicle.fuel}</Text>
+            <Text style={styles.detailText}>Type: {selectedBookingInfo.vehicle.type}</Text>
+            <Text style={styles.detailText}>Owner: {selectedBookingInfo.vehicle.owner}</Text>
+            <Text style={styles.detailText}>Status: {selectedBookingInfo.status}</Text>
+            <Text style={styles.detailText}>Date: {bookingDate.toLocaleDateString("en-US", {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                timeZoneName: 'short'
+            })}</Text>
+            {selectedBookingInfo.status === 'confirmed' && <Text style={styles.detailText}>Confirmation Code: {selectedBookingInfo.confirmationCode}</Text>}
             <ButtonComponent
                 onPress={buttonPressed}
                 text={"Done"}
