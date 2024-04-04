@@ -12,13 +12,21 @@ import { vehicleController } from '../controller/VehicleController';
 import {  doc, getDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 
-const HomeScreen = () => {
+const HomeScreen = ({navigation, route}) => {
     
+    const { email } = route.params
+
     const [searchKeyword, setSearchKeyword] = useState('')
     const [selectedVehicle, setSelectedVehicle] = useState(null)
     const [isBottomSheetVisible, setIsBottomSheetVisible] = useState(false);
     const [searchResult, setSearchResult] = useState([]);
     const [userName, setUserName] = useState('');
+
+    useEffect(() => {
+        fetchUserData();
+        handleSearch(searchKeyword);
+    }, [searchKeyword]);
+
 
     const fetchUserData = async () => {
         try {
@@ -73,15 +81,12 @@ const HomeScreen = () => {
         handleOpenBottomSheet()
     }
 
-    useEffect(() => {
-        handleSearch(searchKeyword);
-    }, [searchKeyword]);
-
+    
 
 
     return (
         <View style={styles.homeContainer}>
-            <Text style={styles.homeHeader}>HomeScreen</Text>
+            <Text style={styles.homeHeader}>Welcome {userName}</Text>
 
             {/* SearchBar */}
             <View style={styles.searchbar}>
@@ -112,7 +117,7 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     homeHeader: {
-        fontSize: 25,
+        fontSize: 20,
         fontWeight: 'bold',
     },
     
