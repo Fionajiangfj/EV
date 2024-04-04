@@ -83,7 +83,7 @@ const TabNavigator = () => {
               try {
                 await signOut(auth)
                 alert("Logout complete!")
-                navigation.navigate('Login');
+                navigation.replace('Login');
               } catch (err) {
                 console.log(err)
               }
