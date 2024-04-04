@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Image, ScrollView, StyleSheet, Text, TextInput } from 'react-native';
+import { Image, StyleSheet, Text, TextInput } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 
 //db
@@ -15,6 +15,7 @@ const RentalFormScreen = ({ navigation, route }) => {
 
     const { email } = route.params
     const [vehicles, setVehicles] = useState([]);
+    const [userName, setUserName] = useState('');
 
     //DropDownPicker
     const [selectedVehicleIndex, setSelectedVehicleIndex] = useState();
@@ -34,6 +35,7 @@ const RentalFormScreen = ({ navigation, route }) => {
     const [price, setPrice] = useState(0);
 
     useEffect(() => {
+        fetchUserData();
         fetchVehicles();
     }, []);
 
@@ -42,6 +44,22 @@ const RentalFormScreen = ({ navigation, route }) => {
             fetchVehicles();
         }, [])
     );
+    
+    const fetchUserData = async () => {
+        try {
+            const userRef = doc(db, "User", email);
+            const userSnap = await getDoc(userRef);
+    
+            if (userSnap.exists()) {
+                const userData = userSnap.data();
+                setUserName(userData.name); // Assuming 'name' is the field storing the user's name
+            } else {
+                console.error("User document does not exist.");
+            }
+        } catch (error) {
+            console.error('Failed to fetch user data:', error);
+        }
+    };
 
     const fetchVehicles = async () => {
         try {
@@ -108,7 +126,8 @@ const RentalFormScreen = ({ navigation, route }) => {
 
         if (errorMessage) {
             alert(`Please correct the following errors:\n${errorMessage}`);
-            return; // Stop the form submission
+            // Stop the form submission
+            return;
         }
 
         try {
@@ -185,6 +204,7 @@ const RentalFormScreen = ({ navigation, route }) => {
         }
     }
 
+    // To reset the form
     const resetForm = () => {
         setSelectedVehicleIndex(null);
         setVehicleName('');
@@ -198,12 +218,14 @@ const RentalFormScreen = ({ navigation, route }) => {
         setLicensePlate('');
         setAddress('');
         setPrice(0);
-        
+
     };
 
 
     return (
         <View style={styles.container}>
+
+            <Text style={styles.homeHeader}>Welcome {userName}</Text>
             <Text style={styles.label}>Vehicle Name:</Text>
 
             <DropDownPicker
@@ -217,7 +239,7 @@ const RentalFormScreen = ({ navigation, route }) => {
                 onChangeValue={(value) => {
                     handleVehicleChange(value);
                 }}
-                zIndex={3000} // Ensure dropdown covers other components
+                zIndex={3000}
                 zIndexInverse={1000}
             />
 
@@ -291,7 +313,7 @@ const RentalFormScreen = ({ navigation, route }) => {
             />
 
 
-            {/* Customized button to view favourites */}
+            {/* Customized button */}
             <ButtonComponent
                 onPress={handleSubmit}
                 text={"Submit"}
@@ -308,6 +330,12 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
+    },
+
+    homeHeader: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        paddingBottom: 10,
     },
     label: {
         marginVertical: 8,

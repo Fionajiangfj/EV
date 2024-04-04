@@ -2,7 +2,8 @@ import { collection, doc, getDocs, query, updateDoc, where } from 'firebase/fire
 import React, { useEffect, useState } from 'react';
 import { Button, FlatList, StyleSheet, Text, View, Image } from 'react-native';
 
-import { db } from '../firebaseConfig'; // Your Firebase config file
+// Your Firebase config file
+import { db } from '../firebaseConfig'; 
 
 const ManageBookingsScreen = () => {
 
