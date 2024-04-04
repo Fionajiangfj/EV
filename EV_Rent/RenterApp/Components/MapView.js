@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'; 
 import { vehicleController } from '../controller/VehicleController';
@@ -63,7 +63,7 @@ const MapViewComponent = ({ onMarkerPress, searchResultData }) => {
         }
     };
 
-    const snapPoints = useMemo(() => ['25%', '50%'], []);
+    // const snapPoints = useMemo(() => ['25%', '50%'], []);
 
     // a variable to programmatically access the MapView element
     const mapRef = useRef(null);

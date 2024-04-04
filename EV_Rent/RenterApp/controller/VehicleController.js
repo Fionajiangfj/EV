@@ -42,30 +42,35 @@ class VehicleController {
 
     // filter vehicles by search keyword
     async filterVehiclesByAddress(searchKeyword) {
-
-        console.log("+++++++++++")
-        console.log(`Search: ${searchKeyword}`)
-
+        console.log("+++++++++++");
+        console.log(`Search: ${searchKeyword}`);
+    
         try {
-
-            // Fetch the vehicle data from Firestore whose address matches with the search keyword
-            const vehiclesRef = collection(db, "Vehicle");
-
-            console.log(vehiclesRef)
-
-            const querySnapshot = await getDocs(query(vehiclesRef, where("pickupLocation.address", "==", searchKeyword)));
+            // Convert searchKeyword to lowercase
+            const lowerCaseSearchKeyword = searchKeyword.toLowerCase();
+    
+            // Fetch all vehicle data from Firestore
+            const querySnapshot = await getDocs(collection(db, "Vehicle"));
+    
             const vehicles = [];
             querySnapshot.forEach((doc) => {
-                vehicles.push(Vehicle.fromFirestore(doc));
+                const vehicle = Vehicle.fromFirestore(doc);
+                // Convert address to lowercase for comparison
+                const lowerCaseAddress = vehicle.pickupLocation.address.toLowerCase();
+                // Check if the lowerCaseAddress contains the lowerCaseSearchKeyword
+                if (lowerCaseAddress.includes(lowerCaseSearchKeyword)) {
+                    vehicles.push(vehicle);
+                }
             });
-
-            console.log(vehicles)
+    
+            console.log(vehicles);
             return vehicles;
         } catch (error) {
             console.error("Error fetching vehicles:", error);
             return [];
         }
     }
+    
 
 }
 
