@@ -8,7 +8,7 @@ import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
 
 const LoginScreen = ({ navigation, route }) => {
 
-    const [usernameFromUI, setUsernameFromUI] = useState("amy@gmail.com");
+    const [usernameFromUI, setUsernameFromUI] = useState("chuck@gmail.com");
     const [passwordFromUI, setPasswordFromUI] = useState("123456");
 
     const onLoginClicked = async () => {
