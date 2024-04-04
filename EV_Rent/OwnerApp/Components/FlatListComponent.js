@@ -22,7 +22,6 @@ const styles = StyleSheet.create({
     videoList: {
         alignContent: "flex-start",
         width: "100%",
-        height: "100%",
         marginTop: 65,
     },
 })

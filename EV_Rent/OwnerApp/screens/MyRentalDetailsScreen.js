@@ -119,12 +119,14 @@ const styles = StyleSheet.create({
         fontSize: 20,
         padding: 15,
         fontWeight: '700',
+        width: "70%",
     },
     rentalPrice: {
         fontSize: 18,
         fontWeight: 'bold',
         color: '#0064B1',
         padding: 15,
+        // width: "30%",
     },
     rentalAddress: {
         fontSize: 16,
