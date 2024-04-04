@@ -6,10 +6,13 @@ import { bookingController } from '../controller/BookingController';
 import { Booking } from '../model/Booking';
 import StatusEnum from '../model/enum/Status';
 import ButtonComponent from './ButtonComponent';
+
+
 const BottomSheet = ({ isVisible, onClose, vehicle }) => {
     const [isOpen, setIsOpen] = useState(false);
     const bottomSheetRef = useRef(null);
     const currentUserId = "amy@gmail.com" // replace with actual user ID
+
     useEffect(() => {
         if (isVisible) {
             bottomSheetRef.current?.present();
@@ -40,49 +43,47 @@ const BottomSheet = ({ isVisible, onClose, vehicle }) => {
 
     return (
         <BottomSheetModalProvider>
-            {vehicle ? 
-            <View style={styles.bottomSheetContainer}>
+            {vehicle ?
+                <View style={styles.bottomSheetContainer}>
 
+                    <BottomSheetModal
+                        ref={bottomSheetRef}
+                        index={0}
+                        snapPoints={[200, 400, 600]}
+                        backgroundComponent={({ style }) => <View style={[style, styles.modalBackground]} />}
+                        onChange={(index) => {
+                            console.log('Modal index changed to:', index);
+                            if (index === -1) {
+                                onClose()
+                            }
+                        }}
+                    >
+                        <View style={styles.modalContent}>
 
-                <BottomSheetModal
-                    ref={bottomSheetRef}
-                    index={0}
-                    snapPoints={[200, 400, 600]}
-                    backgroundComponent={({ style }) => <View style={[style, styles.modalBackground]} />}
-                    onChange={(index) => {
-                        console.log('Modal index changed to:', index);
-                        if(index===-1){
-                            onClose()
-                        }
-                    }}
-                >
-                    <View style={styles.modalContent}>
-
-                        <View style={styles.modalContentBody}>
                             <Text style={styles.modalTitle}>{vehicle.vehicleName}</Text>
-                            <Text style={styles.modalSubheadingPrice}>${vehicle.price}</Text>
+                            <View style={styles.modalContentBody}>
+                                <Text style={styles.modalSubheadingAddress}>{vehicle.pickupLocation.address}</Text>
+                                <Text style={styles.modalSubheadingPrice}>${vehicle.price}</Text>
+                            </View>
+
+
+                            <View style={styles.modalContentImage}>
+                                <Image source={{ uri: vehicle.vehiclePhoto }} style={{ width: "40%", height: 100, marginVertical: 10, borderRadius: 10 }} />
+                            </View>
+
+                            <Text style={styles.modalContentText}>License Plate number: {vehicle.licensePlate}</Text>
+                            <Text style={styles.modalContentText}>Seat Capacity: {vehicle.capacity} seats</Text>
+                            <Text style={styles.modalContentText}>Type: {vehicle.type}</Text>
+                            <Text style={styles.modalContentText}>Fuel: {vehicle.fuel}</Text>
+                            <ButtonComponent
+                                onPress={doBooking}
+                                text={"BOOK NOW"}
+                                justifyContent={"center"}
+                                bgColor={"#0064B1"}
+                            />
                         </View>
-
-                        <Text style={styles.modalSubheadingAddress}>{vehicle.pickupLocation.address}</Text>
-
-                        <View style={styles.modalContentImage}>
-                            <Image source={{ uri: vehicle.vehiclePhoto }} style={{ width: "40%", height: 100, marginVertical: 10, borderRadius: 10 }} />
-                            {/* <Image source={{ uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6TJ_XQDyZZAVlpI4WDfrr5L4_pXwBIntflbiXCoe2tAY1X4HmsD68ReBxtmeiwt00LgM&usqp=CAU" }} style={{ width: "40%", height: 100, marginVertical: 10, borderRadius: 10 }} /> */}
-                        </View>
-
-                        <Text style={styles.modalContentText}>License Plate number: {vehicle.licensePlate}</Text>
-                        <Text style={styles.modalContentText}>Seat Capacity: {vehicle.capacity} seats</Text>
-                        <Text style={styles.modalContentText}>Type: {vehicle.type}</Text>
-                        <Text style={styles.modalContentText}>Fuel: {vehicle.fuel}</Text>
-                        <ButtonComponent
-                            onPress={doBooking}
-                            text={"BOOK NOW"}
-                            justifyContent={"center"}
-                            bgColor={"#0064B1"}
-                        />
-                    </View>
-                </BottomSheetModal>
-            </View> : 
+                    </BottomSheetModal>
+                </View> :
                 <View>
                     <Text>Please select a vehicle</Text>
                 </View>}
@@ -120,16 +121,16 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between'
     },
     modalSubheadingAddress: {
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: '500',
         color: 'gray',
         paddingBottom: 8,
     },
     modalSubheadingPrice: {
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: 'bold',
         color: '#0064B1',
-        paddingVertical: 8,
+        paddingBottom: 8,
     },
     modalContentText: {
         fontSize: 15,

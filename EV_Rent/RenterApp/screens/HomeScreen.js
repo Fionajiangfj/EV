@@ -75,7 +75,7 @@ const HomeScreen = () => {
             </View>
 
             {/* Mapview */}
-            <MapViewComponent onMarkerPress={handleonMarkerPress} searchResultData={searchResult}/>
+            <MapViewComponent onMarkerPress={handleonMarkerPress} searchResultData={searchResult} searchAddress={searchKeyword}/>
 
             <BottomSheet isVisible={isBottomSheetVisible} onClose={handleCloseBottomSheet} vehicle={selectedVehicle} />
         </View>
