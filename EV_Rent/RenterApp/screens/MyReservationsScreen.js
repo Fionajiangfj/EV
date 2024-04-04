@@ -1,42 +1,136 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, Text, View } from 'react-native';
-import { UserController } from '../controller/UserController'; // Update with your actual path
-const MyReservationsScreen = () => {
+import { FlatList, StyleSheet, Text, View, Image, Pressable } from 'react-native';
+import { bookingController } from '../controller/BookingController';
+import { vehicleController } from '../controller/VehicleController';
+
+const MyReservationsScreen = ({ navigation }) => {
     const [bookings, setBookings] = useState([]);
+
+    const formatDate = (isoDateString) => {
+        if (!isoDateString) return '';
+        const date = new Date(isoDateString); // Directly parse the ISO string
+        return date.toLocaleDateString("en-US", {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            timeZoneName: 'short'
+        }); // Example: "April 8, 2024, 7:54 PM PDT"
+    };
+
     useEffect(() => {
-        const userId = 'currentUserId';
-        UserController.fetchUserBookings(userId, (bookings) => {
-            // This function gets called every time there's a change to the user's bookings
-            console.log(bookings);
-            setBookings(bookings);
-            // You can now set your state here to update the UI in real-time
+        const userId = 'amy@gmail.com'; // Replace this with the actual user ID
+        const unsubscribe = bookingController.fetchUserBookings(userId, async (bookings) => {
+            const bookingsWithVehicleInfo = await Promise.all(bookings.map(async (booking) => {
+                const vehicleInfo = await vehicleController.fetchVehicleById(booking.vehicle);
+                return { ...booking, vehicle: vehicleInfo }; // Combine booking with fetched vehicle info
+            }));
+            setBookings(bookingsWithVehicleInfo);
         });
+
+        return () => unsubscribe && unsubscribe();
     }, []);
 
+    const goToBookingDetailsScreen = (booking) => {
+        navigation.push("BookingDetails", { booking });
+    }
+
+    const renderBookingItem = ({ item }) => (
+        <Pressable style={styles.listItem} onPress={() => goToBookingDetailsScreen(item)}>
+            <View style={styles.bookingItem}>
+                <Image source={{ uri: item.vehicle.vehiclePhoto }} style={styles.bookingImage} />
+                <View style={styles.bookingListsItem}>
+                    <Text style={styles.bookingTitle}>{item.vehicle.vehicleName}</Text>
+                    <Text style={styles.bookingDate}>{formatDate(item.bookingDate)}</Text>
+                    <Text>Pickup Location: {item.vehicle.pickupLocation.address}</Text>
+                    <View style={styles.bookingCol}>
+                        <Text style={styles.bookingPrice}>${item.vehicle.price}</Text>
+                        <Text style={styles.bookingStatus}> |  Status: {item.status}</Text>
+                    </View>
+                    {item.status === 'confirmed' && <Text>Confirmation Code: {item.confirmationCode}</Text>}
+                </View>
+            </View>
+        </Pressable>
+    );
 
 
     return (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <View style={styles.container}>
             <FlatList
                 data={bookings}
                 keyExtractor={item => item.id}
-                renderItem={({ item }) => (
-                    <View>
-                        <Text>{item.vehicle.name}</Text>
-                        <Text>{item.date}</Text>
-                        <Text>{item.vehicle.license_plate}</Text>
-                        <Text>{item.vehicle.pickup_address}</Text>
-                        <Text>{item.vehicle.price}</Text>
-                        <Text>{item.owner.name}</Text>
-                        <img src={item.owner.photo}/>
-                        
-                        <Text>{item.status}</Text>
-                        <Text>{item.confirmationCode}</Text>
-                    </View>
-                )}
+                renderItem={({ item }) => renderBookingItem({ item })}
             />
         </View>
     );
 };
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        paddingTop: 20,
+    },
+    bookingItem: {
+        backgroundColor: '#f9f9f9',
+        padding: 20,
+        marginVertical: 8,
+        marginHorizontal: 8,
+        borderRadius: 5,
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+    },
+    bookingListsItem: {
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        gap: 10,
+    },
+
+    bookingTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    // image: {
+    //     width: '40%',
+    //     height: 200,
+    //     resizeMode: 'cover',
+    //     marginVertical: 8,
+    // },
+
+    bookingImage: {
+        width: "40%",
+        height: 100,
+        marginVertical: 10,
+        marginRight: 10,
+        borderRadius: 10
+    },
+
+    ownerPhoto: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        marginTop: 8,
+    },
+    bookingCol: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+
+    bookingPrice: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#0064B1',
+    },
+    bookingStatus: {
+        fontSize: 14,
+        fontWeight: '500',
+        color: 'gray',
+    },
+    bookingDate: {
+        fontSize: 12,
+        color: 'gray',
+    }
+});
 
 export default MyReservationsScreen;

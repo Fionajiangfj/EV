@@ -1,11 +1,63 @@
 import { View, Text, StyleSheet, Image } from "react-native";
+import { useState, useEffect } from "react";
+
+// components
 import ButtonComponent from "../Components/ButtonComponent";
 
+// firestore
+import { db } from "../firebaseConfig";
+import { collection, doc, getDoc, deleteDoc } from "firebase/firestore";
+
+
 const MyRentalDetailsScreen = ({ route }) => {
+
+    // state variables
+    const [selectedVehicleData, setSelectedVehicleData] = useState([])
+
+    useEffect(() => {
+        getSelectedVehicleDataFromDB()
+    }, [])
 
     const buttonPressed = () => {
         console.log("Button Pressed!!!")
         alert("Deleted successfully!")
+    }
+
+    const getSelectedVehicleDataFromDB = async () => {
+
+        console.log("Getting details of selected vehicle")
+
+        try {
+
+            // get id from rental list screen
+            const { id } = route.params;
+            console.log(id)
+
+            // doc to retrieve
+            const documentToRetrieve = doc(db, "Vehicle", id)
+
+            // get the specified document
+            const documentSnapshot = await getDoc(documentToRetrieve);
+
+            if (documentSnapshot.exists()) {
+                // if the document can be found, output its data
+                console.log("Document data:", documentSnapshot.data());
+
+                // set the array of data to state
+                setSelectedVehicleData(documentSnapshot.data())
+
+                console.log(documentSnapshot.data())
+
+            } else {
+                // if the document cannot be found, show an error
+                // in this case, documentSnapshot.data() will be undefined
+                console.log("No such document!");
+                selectedVehicleData([])
+            }
+        } catch (err) {
+            console.log(err.message)
+        }
+
     }
 
     return (
@@ -13,22 +65,24 @@ const MyRentalDetailsScreen = ({ route }) => {
         <View style={styles.detailContainer}>
 
             {/* Image */}
-            <Image source={{ uri: "https://hips.hearstapps.com/hmg-prod/images/2019-honda-civic-sedan-1558453497.jpg" }} style={{ width: "100%", height: 250 }} />
+            <Image source={{ uri: selectedVehicleData.vehiclePhoto }} style={{ width: "100%", height: 250 }} />
 
             <View style={styles.detailHeader}>
                 {/* vehicle name */}
-                <Text style={styles.rentalTitle}>Audi A7 TFSIe</Text>
+                <Text style={styles.rentalTitle}>{selectedVehicleData.vehicleName}</Text>
 
                 {/* Price */}
-                <Text style={styles.rentalPrice}>Price</Text>
+                <Text style={styles.rentalPrice}>${selectedVehicleData.price}</Text>
             </View>
 
-            <Text style={styles.rentalAddress}>Pickup address</Text>
+            <Text style={styles.rentalAddress}>{selectedVehicleData.pickupLocation?.address}</Text>
 
             {/* description */}
-            <Text style={styles.detailText}>License Plate number: BLHT281</Text>
-            <Text style={styles.detailText}>Seat Capacity: 5 seats</Text>
-            <Text style={styles.detailText}>Color: Blue</Text>
+            <Text style={styles.detailText}>License Plate number: {selectedVehicleData.licensePlate}</Text>
+            <Text style={styles.detailText}>Seat Capacity: {selectedVehicleData.capacity} seats</Text>
+            <Text style={styles.detailText}>Fuel: {selectedVehicleData.fuel}</Text>
+            <Text style={styles.detailText}>Type: {selectedVehicleData.type}</Text>
+            <Text style={styles.detailText}>Owner: {selectedVehicleData.owner}</Text>
 
 
             {/* Customized button to add video to favourites */}

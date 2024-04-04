@@ -1,68 +1,92 @@
-import React, { useRef, useState } from 'react';
-import { View, Pressable, Text, StyleSheet, Image } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome5';
+/* eslint-disable react/prop-types */
 import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import React, { useEffect, useRef, useState } from 'react';
+import { Image, StyleSheet, Text, View } from 'react-native';
+import { bookingController } from '../controller/BookingController';
+import { Booking } from '../model/Booking';
+import StatusEnum from '../model/enum/Status';
 import ButtonComponent from './ButtonComponent';
 
-const BottomSheet = () => {
+
+const BottomSheet = ({ isVisible, onClose, vehicle }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const bottomSheetModalRef = useRef(null);
+    const bottomSheetRef = useRef(null);
+    const currentUserId = "amy@gmail.com" // replace with actual user ID
 
-    const openBottomSheet = () => {
-        setIsOpen(true);
-        bottomSheetModalRef.current?.present();
-    };
+    useEffect(() => {
+        if (isVisible) {
+            bottomSheetRef.current?.present();
+            console.log("Bottom sheet is open")
+        } else {
+            bottomSheetRef.current?.dismiss();
+            console.log("Bottom sheet is closed")
+        }
+    }, [isVisible]);
 
-    // const closeBottomSheet = () => {
-    //     setIsOpen(false);
-    //     bottomSheetModalRef.current?.close();
-    // };
-
+    const getRandomFutureDate = () => {
+        const today = new Date();
+        const randomNumberOfDays = Math.floor(Math.random() * 30) + 1;
+        today.setDate(today.getDate() + randomNumberOfDays)
+        return today;
+    }
     const doBooking = () => {
-        console.log("Book Now button pressed!")
-        alert("Book Now button pressed!")
+        const futureDate = getRandomFutureDate();
+        const newBooking = new Booking(null, currentUserId, vehicle.id, futureDate, StatusEnum.pending, null)
+        bookingController.addBooking(newBooking, (error, booking) => {
+            if (error) {
+                console.error("Error adding document: ", error);
+                return;
+            }
+            alert("Booking request sent! You must wait for the owner to confirm your booking.")
+        })
     }
 
     return (
         <BottomSheetModalProvider>
-            <View style={styles.bottomSheetContainer}>
-                <Pressable onPress={openBottomSheet}>
-                    <Icon name="map-marker-alt" size={28} color="#0064B1" />
-                </Pressable>
+            {vehicle ?
+                <View style={styles.bottomSheetContainer}>
 
-                <BottomSheetModal
-                    ref={bottomSheetModalRef}
-                    index={0}
-                    snapPoints={[200, 400, 600]}
-                    backgroundComponent={({ style }) => <View style={[style, styles.modalBackground]} />}
-                >
-                    <View style={styles.modalContent}>
+                    <BottomSheetModal
+                        ref={bottomSheetRef}
+                        index={0}
+                        snapPoints={[200, 400, 600]}
+                        backgroundComponent={({ style }) => <View style={[style, styles.modalBackground]} />}
+                        onChange={(index) => {
+                            console.log('Modal index changed to:', index);
+                            if (index === -1) {
+                                onClose()
+                            }
+                        }}
+                    >
+                        <View style={styles.modalContent}>
 
-                        <View style={styles.modalContentBody}>
-                            <Text style={styles.modalTitle}>Audi A7 TFSIe</Text>
-                            <Text style={styles.modalSubheadingPrice}>$250</Text>
+                            <Text style={styles.modalTitle}>{vehicle.vehicleName}</Text>
+                            <View style={styles.modalContentBody}>
+                                <Text style={styles.modalSubheadingAddress}>{vehicle.pickupLocation.address}</Text>
+                                <Text style={styles.modalSubheadingPrice}>${vehicle.price}</Text>
+                            </View>
+
+
+                            <View style={styles.modalContentImage}>
+                                <Image source={{ uri: vehicle.vehiclePhoto }} style={{ width: "40%", height: 100, marginVertical: 10, borderRadius: 10 }} />
+                            </View>
+
+                            <Text style={styles.modalContentText}>License Plate number: {vehicle.licensePlate}</Text>
+                            <Text style={styles.modalContentText}>Seat Capacity: {vehicle.capacity} seats</Text>
+                            <Text style={styles.modalContentText}>Type: {vehicle.type}</Text>
+                            <Text style={styles.modalContentText}>Fuel: {vehicle.fuel}</Text>
+                            <ButtonComponent
+                                onPress={doBooking}
+                                text={"BOOK NOW"}
+                                justifyContent={"center"}
+                                bgColor={"#0064B1"}
+                            />
                         </View>
-
-                        <Text style={styles.modalSubheadingAddress}>153 Main Street, Seattle, Washington, USA</Text>
-
-                        <View style={styles.modalContentImage}>
-                            <Image source={{ uri: "https://hips.hearstapps.com/hmg-prod/images/2019-honda-civic-sedan-1558453497.jpg" }} style={{ width: "40%", height: 100, marginVertical: 10, borderRadius: 10 }} />
-                            <Image source={{ uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6TJ_XQDyZZAVlpI4WDfrr5L4_pXwBIntflbiXCoe2tAY1X4HmsD68ReBxtmeiwt00LgM&usqp=CAU" }} style={{ width: "40%", height: 100, marginVertical: 10, borderRadius: 10 }} />
-                        </View>
-
-                        <Text style={styles.modalContentText}>License Plate number: BLHT281</Text>
-                        <Text style={styles.modalContentText}>Seat Capacity: 5 seats</Text>
-                        <Text style={styles.modalContentText}>Color: Blue</Text>
-
-                        <ButtonComponent
-                            onPress={doBooking}
-                            text={"BOOK NOW"}
-                            justifyContent={"center"}
-                            bgColor={"#0064B1"}
-                        />
-                    </View>
-                </BottomSheetModal>
-            </View>
+                    </BottomSheetModal>
+                </View> :
+                <View>
+                    <Text>Please select a vehicle</Text>
+                </View>}
         </BottomSheetModalProvider>
     );
 };
@@ -97,16 +121,16 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between'
     },
     modalSubheadingAddress: {
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: '500',
         color: 'gray',
         paddingBottom: 8,
     },
     modalSubheadingPrice: {
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: 'bold',
         color: '#0064B1',
-        paddingVertical: 8,
+        paddingBottom: 8,
     },
     modalContentText: {
         fontSize: 15,

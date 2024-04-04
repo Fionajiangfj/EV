@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-vars */
 class Booking{
-    constructor(id, renter, vehicle, date, status, confirmationCode){
+    constructor(id, renter, vehicle, bookingDate, status, confirmationCode){
         this.id = id;
         this.renter = renter;
         this.vehicle = vehicle;
-        this.date = date;
+        this.bookingDate = bookingDate;
         this.status = status;
         this.confirmationCode = confirmationCode;
     }
@@ -14,14 +14,16 @@ class Booking{
             id: this.id,
             renter: this.renter,
             vehicle: this.vehicle,
-            date: this.date,
+            bookingDate: this.bookingDate,
             status: this.status,
             confirmationCode: this.confirmationCode
         }
     }
 
-    fromFirestore(doc){
+    static fromFirestore(doc){
         const data = doc.data();
-        return new Booking(doc.id, data.renter, data.vehicle, data.date, data.status, data.confirmationCode);
+        return new Booking(doc.id, data.renter, data.vehicle, data.bookingDate, data.status, data.confirmationCode);
     }
 }
+
+export { Booking };
