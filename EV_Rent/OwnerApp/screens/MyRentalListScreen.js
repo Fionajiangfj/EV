@@ -90,7 +90,10 @@ const MyRentalListScreen = ({ navigation }) => {
 
     // Function to navigate to details screen
     const goToDetailsScreen = (id) => {
-        navigation.push("RentalDetails", { id }); // Pass any necessary data to details screen
+        navigation.navigate("Rental Details Screens", {
+            screen: 'RentalDetails',
+            params: { id: id },
+        }); // Pass any necessary data to details screen
     }
 
     const ItemDivider = () => {

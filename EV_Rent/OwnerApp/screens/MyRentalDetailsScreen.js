@@ -36,9 +36,11 @@ const MyRentalDetailsScreen = ({ navigation, route }) => {
         }
     }
 
-    // const editBtnPressed = async () => {
-    //     console.log(`Edit button pressed.`);
-    // }
+    const editBtnPressed = () => {
+        console.log(`Edit button pressed.`);
+        navigation.navigate('EditDetails', { id }); // Make sure 'EditDetails' matches the name you used in your stack navigator
+    };
+    
 
     const getSelectedVehicleDataFromDB = async () => {
 
@@ -109,6 +111,13 @@ const MyRentalDetailsScreen = ({ navigation, route }) => {
                 justifyContent={"center"}
                 bgColor={"#0064B1"}
             /> */}
+
+            <ButtonComponent
+                onPress={editBtnPressed}
+                text={"Edit"}
+                justifyContent={"center"}
+                bgColor={"#0064B1"}
+            />
 
             <ButtonComponent
                 onPress={buttonPressed}
