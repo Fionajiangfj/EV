@@ -21,8 +21,8 @@ const LoginScreen = ({ navigation, route }) => {
             // alert(`Login success! ${auth.currentUser.uid}`)
 
 
-            navigation.replace('Home', {
-                screen: 'Rental Form',
+            navigation.replace('Main', {
+                screen: 'Home',
                 params: { email: usernameFromUI },
             });
 

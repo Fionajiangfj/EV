@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
@@ -36,7 +36,7 @@ export default App;
 const StackNavigator = () => {
 
   return (
-    <Stack.Navigator initialRouteName='Main'
+    <Stack.Navigator initialRouteName='Login'
       screenOptions={{
         headerStyle: { backgroundColor: '#0064B1' },
         headerTintColor: '#fff',
@@ -51,9 +51,12 @@ const StackNavigator = () => {
 }
 
 const TabNavigator = () => {
+
+  const navigation = useNavigation(); // Use the useNavigation hook to access navigation
+
   return (
     <Tab.Navigator
-      screenOptions={({ route }) => ({
+      screenOptions={({  navigation, route  }) => ({
         tabBarIcon: ({ color }) => {
           if (route.name == "Home") {
             return <MaterialIcons name="map" size={24} color={color} />
