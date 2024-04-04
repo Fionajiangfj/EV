@@ -1,32 +1,53 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { SearchBar } from "react-native-elements";
+import { FlatList, TextInput } from "react-native-gesture-handler";
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 // components
 import BottomSheet from "../Components/BottomSheet";
 import MapViewComponent from "../Components/MapView";
+import { vehicleController } from '../controller/VehicleController';
+
 
 const HomeScreen = () => {
     const [searchKeyword, setSearchKeyword] = useState('')
-    const [selectedVehicle, setSelectedVehicle] = useState(null) 
+    const [selectedVehicle, setSelectedVehicle] = useState(null)
     // const [mapMarker, setMapMarker] = useState('')
     const [isBottomSheetVisible, setIsBottomSheetVisible] = useState(false);
+
+    const [searchResult, setSearchResult] = useState([]);
+
     const handleOpenBottomSheet = () => {
         setIsBottomSheetVisible(true);
     };
 
-
-    const [searchResults, setSearchResults] = useState([])
-
     const handleCloseBottomSheet = () => {
         setIsBottomSheetVisible(false);
     };
-  
-    const handleSearch = (text) => {
-        setSearchKeyword(text);
-        // Implement your search logic here
+
+    const handleSearch = (searchKeyword) => {
 
 
+        // Update the searchKeyword state
+        setSearchKeyword(searchKeyword);
+
+        console.log(`Keyword: ${searchKeyword}`)
+
+        // Filering vehicles based on their address
+        if (searchKeyword.trim() !== '') {
+            vehicleController.filterVehiclesByAddress(searchKeyword).then(vehicles => {
+                setSearchResult(vehicles);
+
+                console.log(`result: ${searchResult}`)
+                console.log(vehicles)
+            }).catch(error => {
+                console.error("Failed fetching results: ", error);
+                // You might want to set an error state or display a message to the user here
+            });
+        } else {
+            // Clear search results when searchKeyword is empty
+            setSearchResult([]);
+        }
     };
 
     const handleonMarkerPress = (vehicle) => {
@@ -34,20 +55,49 @@ const HomeScreen = () => {
         handleOpenBottomSheet()
     }
 
+    useEffect(() => {
+        handleSearch(searchKeyword);
+    }, [searchKeyword]);
+
+
+
     return (
         <View style={styles.container}>
             <Text style={styles.header}>HomeScreen</Text>
-            
-            {/* SearchBar */}
-            <SearchBar placeholder="Search here..." onChangeText={setSearchKeyword} value={searchKeyword} autoCorrect={false} lightTheme round 
-            containerStyle={{ backgroundColor: 'transparent', borderBottomColor: 'transparent', borderTopColor: 'transparent' }}
-            inputContainerStyle={{ backgroundColor: '#e8e8e8', borderRadius: 20 }}
-            inputStyle={{ color: 'black' }}/> 
-            
-            {/* Mapview */}
-            <MapViewComponent onMarkerPress={handleonMarkerPress}/>
 
-            <BottomSheet isVisible={isBottomSheetVisible} onClose={handleCloseBottomSheet} vehicle={selectedVehicle}/>
+            {/* SearchBar */}
+            {/* <TextInput placeholder="Search here..." onChangeText={setSearchKeyword} value={searchKeyword} autoCorrect={false} style={styles.searchbar} /> */}
+
+            <View style={styles.searchbar}>
+                <Icon name="search" size={20} color="gray" style={styles.searchIcon} />
+                <TextInput
+                    placeholder="Search here..."
+                    onChangeText={handleSearch}
+                    value={searchKeyword}
+                    autoCorrect={false}
+                    style={styles.searchText}
+                />
+            </View>
+
+            <FlatList
+                data={searchResult}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                    <View style={styles.listItem}>
+                        <Text style={styles.listTitle}>{item.vehicleName}</Text>
+                        <Text>{`Capacity: ${item.capacity}`}</Text>
+                        <Text>{`Fuel Type: ${item.fuel}`}</Text>
+                        <Text>{`License Plate: ${item.licensePlate}`}</Text>
+                        <Text>Address: {item.pickupLocation.address}</Text>
+                        {/* Add more details as needed */}
+                    </View>
+                )}
+            />
+
+            {/* Mapview */}
+            <MapViewComponent onMarkerPress={handleonMarkerPress} searchResultData={searchResult}/>
+
+            <BottomSheet isVisible={isBottomSheetVisible} onClose={handleCloseBottomSheet} vehicle={selectedVehicle} />
         </View>
     )
 }
@@ -80,8 +130,66 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     searchbar: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderColor: 'gray',
+        height: 40,
+        margin: 10,
+        borderTopLeftRadius: 10,
+        borderBottomLefttRadius: 10,
+    },
+    searchIcon: {
+        height: 40,
+        borderColor: 'gray',
+        borderWidth: 1,
+        borderTopRightRadius: 10,
+        borderBottomRightRadius: 10,
+        padding: 10,
+
+    },
+    searchText: {
         backgroundColor: '#fff',
-        margin: 0,
-        
+        height: 40,
+        borderColor: 'gray',
+        borderWidth: 1,
+        borderTopRightRadius: 10,
+        borderBottomRightRadius: 10,
+        padding: 5,
+        flex: 1,
+    },
+
+    listItem: {
+        flexDirection: 'column',
+        alignItems: 'left',
+    },
+
+    listTitle: {
+        fontSize: 20,
+        textAlign: 'left',
+        paddingVertical: 10,
+        color: 'black',
+        fontWeight: 'bold',
+    },
+    listImage: {
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        gap: 10,
+        paddingBottom: 10,
+    },
+    listBody: {
+        flexDirection: 'column',
+        justifyContent: 'flex-start'
+    },
+    listPrice: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#0064B1',
+        paddingBottom: 8,
+    },
+    listAddress: {
+        fontSize: 16,
+        fontWeight: '500',
+        color: 'gray',
+        paddingBottom: 8,
     }
 })

@@ -21,8 +21,14 @@ const MyRentalListScreen = ({ navigation }) => {
         console.log("My Rental List screen loaded")
 
         // Move all the database fetch & state update code into the useEffect
-        retrieveRentalsFromDB()
-    }, [])
+        // retrieveRentalsFromDB()
+
+        const unsubscribe = navigation.addListener('focus', () => {
+            retrieveRentalsFromDB();
+        });
+
+        return unsubscribe;
+    }, [navigation])
 
     // func to retrieve favourite videos from the db
     const retrieveRentalsFromDB = async () => {
@@ -106,10 +112,10 @@ const MyRentalListScreen = ({ navigation }) => {
     }
 
     // Pass a callback function as a navigation parameter
-    const navigateToRentalForm = () => {
-        navigation.navigate('RentalForm', { updateRentalList: retrieveRentalsFromDB });
-    };
-
+    // const navigateToRentalForm = () => {
+    //     navigation.navigate('RentalForm', { updateRentalList: retrieveRentalsFromDB });
+    // };
+    
     // render the list
     return (
         <View style={styles.rentalContainer}>

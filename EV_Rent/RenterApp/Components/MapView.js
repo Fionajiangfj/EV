@@ -1,14 +1,14 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'; // Or any other icon set
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons'; 
 import { vehicleController } from '../controller/VehicleController';
 
 // map imports
 import * as Location from "expo-location";
 import MapView, { Marker } from "react-native-maps";
 
-const MapViewComponent = ({ onMarkerPress }) => {
+const MapViewComponent = ({ onMarkerPress, searchResultData }) => {
 
     const [deviceLocation, setDeviceLocation] = useState(null);
     const [currRegion, setCurrRegion] = useState(null);
@@ -25,6 +25,9 @@ const MapViewComponent = ({ onMarkerPress }) => {
             }
             setVehicles(vehicles);
         })
+
+        console.log(`search data:  ${searchResultData}`)
+        console.log(`search data numbers:  ${searchResultData.length}`)
     }, []);
 
     // Function to fetch current location and set it as initial region
@@ -68,10 +71,12 @@ const MapViewComponent = ({ onMarkerPress }) => {
     const mapMoved = (updatedRegion) => {
         console.log(`Map moved to : ${updatedRegion.latitude} ${updatedRegion.longitude}`);
         setCurrRegion(updatedRegion);
+
+        console.log(`search data numbers:  ${searchResultData.length}`)
     };
 
-    // const moveToDeviceLocation = () => {
-    //     mapRef.current.animateCamera({ center: deviceLocation }, 2000);
+    // const moveToSearchedLocation = () => {
+    //     mapRef.current.animateCamera({ center: searchResultData.address }, 2000);
     // };
 
 
@@ -84,8 +89,11 @@ const MapViewComponent = ({ onMarkerPress }) => {
     return (
         <View style={styles.mapContainer}>
             <Text>Your location is {JSON.stringify(deviceLocation)}</Text>
+            {/* <Text>Your location is Lat: {deviceLocation.latitude}, Lng: {deviceLocation.longitude}</Text> */}
+            
 
-            <MapView
+            { searchResultData.length === 0 ? (
+                <MapView
                 style={styles.map}
                 initialRegion={currRegion}
                 onRegionChangeComplete={mapMoved}
@@ -114,6 +122,40 @@ const MapViewComponent = ({ onMarkerPress }) => {
                 )}
 
             </MapView>
+            ) : (
+                <MapView
+                style={styles.map}
+                initialRegion={currRegion}
+                onRegionChangeComplete={mapMoved}
+                ref={mapRef}
+            >
+
+                {searchResultData.map(vehicle => (
+                    <Marker
+                        key={vehicle.id}
+                        coordinate={{ latitude: vehicle.pickupLocation.lat, longitude: vehicle.pickupLocation.lng }}
+                        title={vehicle.name}
+                        onPress={() => markerPressed(vehicle)}
+                    >
+                        <View style={styles.customMarker}>
+                            <Text style={styles.markerText}>${vehicle.price}</Text>
+                        </View>
+                    </Marker>
+                ))}
+
+                {deviceLocation && (
+                    <Marker
+                    coordinate={deviceLocation}
+                    title="My Location"
+                    >
+                        <Icon name="map-marker" size={30} color="#3498db" />
+                    </Marker>
+                )}
+
+            </MapView>
+            )
+
+            }
 
         </View>
     );
@@ -127,8 +169,8 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     map: {
-        // height: "85%",
-        height: "70%",
+        height: "85%",
+        // height: "70%",
         width: "100%",
         marginTop: 15,
     },
