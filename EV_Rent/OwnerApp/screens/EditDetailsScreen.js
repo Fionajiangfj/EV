@@ -228,7 +228,7 @@ const EditDetailsScreen = ({ navigation, route }) => {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.label}>Vehicle Name: {selectedVehicleData.vehicleName} </Text>
+      <Text style={styles.vehicleName}>Vehicle Name: {selectedVehicleData.vehicleName} </Text>
 
       <Text style={styles.label}>Capacity:</Text>
       <TextInput
@@ -292,8 +292,17 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
   },
+
+  vehicleName: {
+    marginVertical: 8,
+    fontWeight: 'bold',
+    fontSize: 18,
+  },
+
   label: {
     marginVertical: 8,
+    fontWeight: 'bold',
+    fontSize: 15,
   },
   input: {
     borderColor: '#cccccc',

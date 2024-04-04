@@ -40,7 +40,7 @@ const MyRentalDetailsScreen = ({ navigation, route }) => {
         console.log(`Edit button pressed.`);
         navigation.navigate('EditDetails', { id }); // Make sure 'EditDetails' matches the name you used in your stack navigator
     };
-    
+
 
     const getSelectedVehicleDataFromDB = async () => {
 
@@ -103,28 +103,20 @@ const MyRentalDetailsScreen = ({ navigation, route }) => {
             <Text style={styles.detailText}>Type: {selectedVehicleData.type}</Text>
             <Text style={styles.detailText}>Owner: {selectedVehicleData.owner}</Text>
 
-
-            
-            {/* <ButtonComponent
-                onPress={buttonPressed}
-                text={"Update"}
-                justifyContent={"center"}
-                bgColor={"#0064B1"}
-            /> */}
-
-            <ButtonComponent
-                onPress={editBtnPressed}
-                text={"Edit"}
-                justifyContent={"center"}
-                bgColor={"#0064B1"}
-            />
-
-            <ButtonComponent
-                onPress={buttonPressed}
-                text={"Delete"}
-                justifyContent={"center"}
-                bgColor={"#FF0000"}
-            />
+            <View style={[styles.detailButtonContainer, { marginHorizontal: 30,}]}>
+                <ButtonComponent
+                    onPress={editBtnPressed}
+                    text={"Edit"}
+                    justifyContent={"flex-start"}
+                    bgColor={"#4CBB17"}
+                />
+                <ButtonComponent
+                    onPress={buttonPressed}
+                    text={"Delete"}
+                    justifyContent={"flex-end"}
+                    bgColor={"#FF0000"}
+                />
+            </View>
 
 
 
@@ -168,4 +160,11 @@ const styles = StyleSheet.create({
         paddingVertical: 5,
         paddingHorizontal: 15,
     },
+    detailButtonContainer: {
+        justifyContent: 'space-evenly',
+        flexDirection: 'column',
+        marginTop: 30,
+    },
+
+    
 })
