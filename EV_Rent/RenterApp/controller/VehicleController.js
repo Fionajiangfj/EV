@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { collection, doc, getDoc, getDocs } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
 import { db } from '../firebaseConfig'; // Update the import path to your firebase configuration
 import { Vehicle } from '../model/Vehicle'; // Adjust the import path to your Vehicle class
 
@@ -37,6 +37,33 @@ class VehicleController {
         } else {
             console.log("No such vehicle!");
             return null;
+        }
+    }
+
+    // filter vehicles by search keyword
+    async filterVehiclesByAddress(searchKeyword) {
+
+        console.log("+++++++++++")
+        console.log(`Search: ${searchKeyword}`)
+
+        try {
+
+            // Fetch the vehicle data from Firestore whose address matches with the search keyword
+            const vehiclesRef = collection(db, "Vehicle");
+
+            console.log(vehiclesRef)
+
+            const querySnapshot = await getDocs(query(vehiclesRef, where("pickupLocation.address", "==", searchKeyword)));
+            const vehicles = [];
+            querySnapshot.forEach((doc) => {
+                vehicles.push(Vehicle.fromFirestore(doc));
+            });
+
+            console.log(vehicles)
+            return vehicles;
+        } catch (error) {
+            console.error("Error fetching vehicles:", error);
+            return [];
         }
     }
 

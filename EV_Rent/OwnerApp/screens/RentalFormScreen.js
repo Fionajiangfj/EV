@@ -165,7 +165,7 @@ const RentalFormScreen = ({ navigation, route }) => {
 
             // navigation.dispatch(StackActions.pop(1));
             navigation.navigate('Rental List');
-            route.params?.updateRentalList?.();
+            // route.params?.updateRentalList?.();
 
         } catch (err) {
             console.error(`Error while saving document to collection : ${err}`);
