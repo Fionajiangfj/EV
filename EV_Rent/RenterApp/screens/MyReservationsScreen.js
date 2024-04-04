@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     bookingItem: {
         backgroundColor: '#f9f9f9',
         padding: 20,
-        marginVertical: 8,
+        marginVertical: 5,
         marginHorizontal: 8,
         borderRadius: 5,
         flexDirection: 'row',

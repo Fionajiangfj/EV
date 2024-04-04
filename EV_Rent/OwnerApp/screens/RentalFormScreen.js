@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Image, ScrollView, StyleSheet, Text, TextInput } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
 //db
 import { addDoc, collection, doc, getDoc, updateDoc } from "firebase/firestore";
@@ -8,6 +9,7 @@ import { db } from "../firebaseConfig";
 import * as Location from "expo-location";
 import DropDownPicker from 'react-native-dropdown-picker';
 import ButtonComponent from '../Components/ButtonComponent';
+import { View } from 'react-native';
 
 const RentalFormScreen = ({ navigation, route }) => {
 
@@ -32,27 +34,33 @@ const RentalFormScreen = ({ navigation, route }) => {
     const [price, setPrice] = useState(0);
 
     useEffect(() => {
-        const fetchVehicles = async () => {
-            try {
-                const response = await fetch('https://fionajiangfj.github.io/EVRentingApp/vehicles.json');
-                const data = await response.json();
-
-                const dropdownItems = data.map((vehicle, index) => ({
-                    label: `${vehicle.make} ${vehicle.model} ${vehicle.trim}`,
-                    value: `${vehicle.make}-${vehicle.model}-${vehicle.trim}`, // Ensuring uniqueness
-                    ...vehicle
-                }));
-                setItems(dropdownItems || []);
-
-                setVehicles(data || []); // Fallback to an empty array if undefined
-            } catch (error) {
-                console.error('Failed to fetch vehicles:', error);
-                setVehicles([]); // Ensure vehicles is always an array
-            }
-        };
-
         fetchVehicles();
     }, []);
+
+    useFocusEffect(
+        React.useCallback(() => {
+            fetchVehicles();
+        }, [])
+    );
+
+    const fetchVehicles = async () => {
+        try {
+            const response = await fetch('https://fionajiangfj.github.io/EVRentingApp/vehicles.json');
+            const data = await response.json();
+
+            const dropdownItems = data.map((vehicle, index) => ({
+                label: `${vehicle.make} ${vehicle.model} ${vehicle.trim}`,
+                value: `${vehicle.make}-${vehicle.model}-${vehicle.trim}`, // Ensuring uniqueness
+                ...vehicle
+            }));
+            setItems(dropdownItems || []);
+
+            setVehicles(data || []); // Fallback to an empty array if undefined
+        } catch (error) {
+            console.error('Failed to fetch vehicles:', error);
+            setVehicles([]); // Ensure vehicles is always an array
+        }
+    };
 
     const handleVehicleChange = (combinedValue) => {
         // const selectedVehicle = vehicles.find(vehicle => vehicle.make === vehicleMake);
@@ -87,14 +95,15 @@ const RentalFormScreen = ({ navigation, route }) => {
         let errorMessage = "";
 
         if (!vehicleName.trim()) errorMessage += "Vehicle name is required.\n";
-        if (!capacity.trim() || isNaN(capacity) || Number(capacity) <= 0) {
+        if (!capacity.toString().trim() || isNaN(capacity) || Number(capacity) <= 0) {
             errorMessage += "Capacity must be a positive number.\n";
         }
         if (!fuel.trim()) errorMessage += "Fuel type is required.\n";
         if (!type.trim()) errorMessage += "Vehicle type is required.\n";
+        if (!licensePlate.trim()) errorMessage += "License Plate number is required.\n";
         if (!address.trim()) errorMessage += "Address is required.\n";
-        if (!price.trim() || isNaN(price) || Number(price) < 0) {
-            errorMessage += "Price must be a non-negative number.\n";
+        if (!price.toString().trim() || isNaN(price) || Number(price) <= 0) {
+            errorMessage += "Enter correct price.\n";
         }
 
         if (errorMessage) {
@@ -134,10 +143,10 @@ const RentalFormScreen = ({ navigation, route }) => {
                 fuel: fuel,
                 type: type,
                 licensePlate: licensePlate,
-                price: price, 
+                price: price,
                 pickupLocation: pickupAddress,
                 owner: email
-                
+
             }
 
             console.log(`carToInsert : ${carToInsert}`);
@@ -145,6 +154,9 @@ const RentalFormScreen = ({ navigation, route }) => {
             // Add the car document to the Vehicles collection
             const vehicleDocRef = await addDoc(collection(db, "Vehicle"), carToInsert);
             console.log(`Car added successfully with ID: ${vehicleDocRef.id}`);
+
+            // After successful submission, reset the form
+            resetForm();
 
             // Retrieve the user document from Firestore
             const userRef = doc(db, "User", email);
@@ -166,16 +178,32 @@ const RentalFormScreen = ({ navigation, route }) => {
 
             // navigation.dispatch(StackActions.pop(1));
             navigation.navigate('Rental List');
-            // route.params?.updateRentalList?.();
+
 
         } catch (err) {
             console.error(`Error while saving document to collection : ${err}`);
         }
     }
 
+    const resetForm = () => {
+        setSelectedVehicleIndex(null);
+        setVehicleName('');
+        setOpen(false);
+        setValue(null);
+        setItems([]);
+        setImageURL('');
+        setCapacity(0);
+        setFuel('');
+        setType('');
+        setLicensePlate('');
+        setAddress('');
+        setPrice(0);
+        
+    };
+
 
     return (
-        <ScrollView style={styles.container}>
+        <View style={styles.container}>
             <Text style={styles.label}>Vehicle Name:</Text>
 
             <DropDownPicker
@@ -202,49 +230,66 @@ const RentalFormScreen = ({ navigation, route }) => {
                 )
             }
 
-            <Text style={styles.label}>Capacity:</Text>
-            <TextInput
-                style={styles.input}
-                onChangeText={setCapacity}
-                value={String(capacity)}
-                keyboardType="numeric"
-            />
+            <View style={styles.inputViewContainer}>
+                <View style={[styles.inputViewContent, { marginTop: 15 }]}>
+                    <Text style={styles.label}>Capacity:</Text>
+                    <TextInput
+                        style={styles.inputContent}
+                        onChangeText={setCapacity}
+                        value={String(capacity)}
+                        keyboardType="numeric"
+                    />
+                </View>
 
-            <Text style={styles.label}>Fuel:</Text>
-            <TextInput
-                style={styles.input}
-                onChangeText={setFuel}
-                value={fuel}
-            />
+                <View style={[styles.inputViewContent, { marginTop: 15 }]}>
+                    <Text style={styles.label}>Fuel:</Text>
+                    <TextInput
+                        style={styles.inputContent}
+                        onChangeText={setFuel}
+                        value={fuel}
+                        placeholder='Fuel'
+                    />
+                </View>
+            </View>
 
-            <Text style={styles.label}>Type:</Text>
-            <TextInput
-                style={styles.input}
-                onChangeText={setType}
-                value={type}
-            />
+            <View style={styles.inputView}>
+                <Text style={styles.label}>Type:</Text>
+                <TextInput
+                    style={styles.input}
+                    onChangeText={setType}
+                    value={type}
+                    placeholder='Type'
+                />
+            </View>
+
+            <View style={styles.inputView}>
+                <Text style={styles.label}>Price:</Text>
+                <TextInput
+                    style={styles.input}
+                    onChangeText={setPrice}
+                    value={String(price)}
+                    keyboardType="numeric"
+                    placeholder='Enter Price'
+                />
+
+            </View>
 
             <Text style={styles.label}>License Plate:</Text>
             <TextInput
-                style={styles.input}
+                style={styles.userInput}
                 onChangeText={setLicensePlate}
                 value={licensePlate}
-            />
-
-            <Text style={styles.label}>Price:</Text>
-            <TextInput
-                style={styles.input}
-                onChangeText={setPrice}
-                value={String(price)}
-                keyboardType="numeric"
+                placeholder='Enter License Plate number'
             />
 
             <Text style={styles.label}>Address:</Text>
             <TextInput
-                style={styles.input}
+                style={styles.userInput}
                 onChangeText={setAddress}
                 value={address}
+                placeholder='Enter address'
             />
+
 
             {/* Customized button to view favourites */}
             <ButtonComponent
@@ -253,7 +298,7 @@ const RentalFormScreen = ({ navigation, route }) => {
                 justifyContent={"center"}
                 bgColor={"#0064B1"}
             />
-        </ScrollView>
+        </View>
     );
 };
 
@@ -266,6 +311,38 @@ const styles = StyleSheet.create({
     },
     label: {
         marginVertical: 8,
+        fontSize: 15,
+        fontWeight: 'bold',
+    },
+
+    carImage: {
+        width: 100,
+        height: 100,
+        resizeMode: 'contain',
+
+    },
+
+    inputViewContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+
+    inputViewContent: {
+        flexDirection: 'column',
+        width: '47%'
+    },
+
+    inputContent: {
+        borderColor: '#cccccc',
+        borderWidth: 1,
+        padding: 10,
+        marginBottom: 15,
+        borderRadius: 5,
+    },
+
+    inputView: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
     },
     input: {
         borderColor: '#cccccc',
@@ -273,11 +350,14 @@ const styles = StyleSheet.create({
         padding: 10,
         marginBottom: 15,
         borderRadius: 5,
+        width: '70%'
     },
-    carImage: {
-        width: 100,
-        height: 100,
-        resizeMode: 'contain'
+    userInput: {
+        borderColor: '#cccccc',
+        borderWidth: 1,
+        padding: 10,
+        marginBottom: 5,
+        borderRadius: 5,
     },
 });
 
