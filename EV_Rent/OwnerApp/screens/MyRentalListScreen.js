@@ -15,12 +15,9 @@ const MyRentalListScreen = ({ navigation }) => {
     // state variable
     const [myRentals, setMyRentals] = useState([])
 
-
     useEffect(() => {
 
         // Move all the database fetch & state update code into the useEffect
-        // retrieveRentalsFromDB()
-
         const unsubscribe = navigation.addListener('focus', () => {
             retrieveRentalsFromDB();
         });
@@ -61,7 +58,6 @@ const MyRentalListScreen = ({ navigation }) => {
 
     }
 
-
     // func to delete all favourite videos from the db
     const deleteAllRentalListings = async (Vehicle) => {
 
@@ -97,22 +93,28 @@ const MyRentalListScreen = ({ navigation }) => {
         navigation.push("RentalDetails", { id }); // Pass any necessary data to details screen
     }
 
-    // const goToDetailsScreen = () => {
-    //     // navigation.push("Rental Details"); // Pass any necessary data to details screen
-    //     navigation.navigate('RentalDetails')
-    // }
-
     const ItemDivider = () => {
         return (
             <View style={{ height: 1, width: "100%", backgroundColor: "#888" }} />
         )
     }
 
-    // Pass a callback function as a navigation parameter
-    // const navigateToRentalForm = () => {
-    //     navigation.navigate('RentalForm', { updateRentalList: retrieveRentalsFromDB });
-    // };
-    
+    const renderRentalsItem = ({ item }) => (
+        <Pressable style={styles.listItem} onPress={() => goToDetailsScreen(item.id)}>
+            <View style={styles.listItemBody}>
+                <Image source={{ uri: item.vehiclePhoto }} style={{ width: "40%", height: 100, marginVertical: 10, borderRadius: 10 }} />
+                <View style={styles.listBody}>
+                    <View style={styles.listBody}>
+                        <Text style={styles.listTitle}>{item.vehicleName}</Text>
+                        <Text style={styles.listPrice}>${item.price}</Text>
+                    </View>
+                    <Text style={styles.listAddress}>{item.pickupLocation.address}</Text>
+                </View>
+            </View>
+
+        </Pressable>
+    )
+
     // render the list
     return (
         <View style={styles.rentalContainer}>
@@ -136,27 +138,11 @@ const MyRentalListScreen = ({ navigation }) => {
                 // Customized FlatList 
                 < FlatListComponent
                     data={myRentals}
-                    renderItem={({ item }) => (
-                        <Pressable style={styles.listItem} onPress={() => goToDetailsScreen(item.id)}>
-                            <View style={styles.listItemBody}>
-                                <Image source={{ uri: item.vehiclePhoto }} style={{ width: "40%", height: 100, marginVertical: 10, borderRadius: 10 }} />
-                                <View style={styles.listBody}>
-                                    <View style={styles.listBody}>
-                                        <Text style={styles.listTitle}>{item.vehicleName}</Text>
-                                        <Text style={styles.listPrice}>${item.price}</Text>
-                                    </View>
-                                    {/* <Text style={styles.listAddress} numberOfLines={2}>{formatAddress("153 Main Street, Seattle, Washington, USA")}</Text> */}
-                                    <Text style={styles.listAddress}>{item.pickupLocation.address}</Text>
-                                </View>
-                            </View>
-
-                        </Pressable>
-                    )}
+                    renderItem={({ item }) => renderRentalsItem({ item })}
                     keyExtractor={(item) => item.id}
                     ItemSeparatorComponent={ItemDivider}
                 />
             )}
-
 
         </View>
     );
@@ -192,7 +178,7 @@ const styles = StyleSheet.create({
     },
 
     listTitle: {
-        fontSize: 20,
+        fontSize: 18,
         textAlign: 'left',
         paddingVertical: 10,
         color: 'black',
@@ -206,7 +192,8 @@ const styles = StyleSheet.create({
     },
     listBody: {
         flexDirection: 'column',
-        justifyContent: 'flex-start'
+        justifyContent: 'flex-start',
+        width: '75%',
     },
     listPrice: {
         fontSize: 16,

@@ -7,6 +7,7 @@ import { db } from "../firebaseConfig";
 
 import * as Location from "expo-location";
 import DropDownPicker from 'react-native-dropdown-picker';
+import ButtonComponent from '../Components/ButtonComponent';
 
 const RentalFormScreen = ({ navigation, route }) => {
 
@@ -245,9 +246,12 @@ const RentalFormScreen = ({ navigation, route }) => {
                 value={address}
             />
 
-            <Button
-                title="Submit"
+            {/* Customized button to view favourites */}
+            <ButtonComponent
                 onPress={handleSubmit}
+                text={"Submit"}
+                justifyContent={"center"}
+                bgColor={"#0064B1"}
             />
         </ScrollView>
     );
