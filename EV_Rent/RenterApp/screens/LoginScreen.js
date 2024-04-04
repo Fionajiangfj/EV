@@ -3,8 +3,9 @@ import { View, Text, TextInput, StyleSheet, Pressable } from 'react-native';
 import ButtonComponent from '../Components/ButtonComponent';
 
 // import the auth variable
-import { auth } from '../firebaseConfig';
+import { auth, db } from '../firebaseConfig';
 import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { getDoc, doc } from "firebase/firestore";
 
 
 const LoginScreen = ({ navigation, route }) => {
@@ -12,25 +13,54 @@ const LoginScreen = ({ navigation, route }) => {
     const [usernameFromUI, setUsernameFromUI] = useState("chuck@gmail.com");
     const [passwordFromUI, setPasswordFromUI] = useState("123456");
 
+    const checkUserRole = async (email) => {
+        try{
+            const docRef = doc(db, "User", email);
+
+            const docSnapshot = await getDoc(docRef);
+
+            if (docSnapshot.exists()){
+
+                console.log(`Document data : ${JSON.stringify(docSnapshot.data())}`);
+
+                const userData = docSnapshot.data();
+                console.log(userData.role);
+                
+                if (userData.role !== "renter"){
+                    alert(`Only car renter can access this app!`)
+                    return
+                }
+
+                navigation.replace('Main', {
+                    screen: 'Home',
+                    params: { email: usernameFromUI },
+                });
+
+            }else{
+                //no matching document for the given ID found
+                console.log(`no matching document for the given ID ${email} found`);
+                alert(`Sorry, you are not a registered user.`)
+            }
+
+        }catch(err){
+            console.error(`Error getting existing document with id ${email}: ${err}`);
+        }
+    }
 
     const onLoginClicked = async () => {
         //verify credentials
         try {
             const userCredential = await signInWithEmailAndPassword(auth, usernameFromUI, passwordFromUI)
-            // who is the current user?
+
             console.log("Who is the currently logged in user")
-            console.log(auth.currentUser)
-            // alert(`Login success! ${auth.currentUser.uid}`)
+            console.log(auth.currentUser.email)
 
-
-            navigation.replace('Main', {
-                screen: 'Home',
-                params: { email: usernameFromUI },
-            });
+            checkUserRole(auth.currentUser.email)
 
 
         } catch (err) {
             console.log(err)
+            alert(`Sorry, the login info is incorrect.`)
         }
 
 
