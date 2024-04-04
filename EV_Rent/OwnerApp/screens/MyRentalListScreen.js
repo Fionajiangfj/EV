@@ -1,14 +1,13 @@
-import React from "react"
-import { StyleSheet, Text, View, Pressable, TextInput, FlatList, TouchableOpacity, Image } from 'react-native';
-import { useState, useEffect } from "react"
+import React, { useEffect, useState } from "react";
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 // 1. Import the db variable from firebaseConfig
 import { db } from '../firebaseConfig';
 
 // 2. Import the relevant functions from firestore
-import { collection, getDocs, query, where } from "firebase/firestore";
-import FlatListComponent from "../Components/FlatListComponent";
+import { collection, getDocs } from "firebase/firestore";
 import ButtonComponent from "../Components/ButtonComponent";
+import FlatListComponent from "../Components/FlatListComponent";
 
 
 const MyRentalListScreen = ({ navigation }) => {
@@ -18,7 +17,6 @@ const MyRentalListScreen = ({ navigation }) => {
 
 
     useEffect(() => {
-        console.log("My Rental List screen loaded")
 
         // Move all the database fetch & state update code into the useEffect
         retrieveRentalsFromDB()
@@ -45,7 +43,6 @@ const MyRentalListScreen = ({ navigation }) => {
                 resultsFromFirestore.push(itemToAdd)
             });
 
-            console.log("array data...")
             console.log(resultsFromFirestore)
 
             // save data to a state variable

@@ -1,7 +1,7 @@
 const StatusEnum = {
     confirmed: 'confirmed',
     pending: 'pending',
-    cancelled: 'cancelled'
+    declined: 'declined'
 };
 
 export default StatusEnum;
