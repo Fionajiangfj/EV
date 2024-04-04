@@ -75,10 +75,28 @@ const MapViewComponent = ({ onMarkerPress, searchResultData, searchKeyword }) =>
         console.log(`search data numbers:  ${searchResultData.length}`)
     };
 
-    // const moveToSearchedLocation = () => {
-    //     mapRef.current.animateCamera({ center: searchResultData.address }, 2000);
-    // };
-
+    useEffect(() => {
+        if (searchResultData.length > 0) {
+            const firstResult = searchResultData[0]; // Assuming the first result determines the region
+            const newRegion = {
+                latitude: firstResult.pickupLocation.lat,
+                longitude: firstResult.pickupLocation.lng,
+                latitudeDelta: 0.05,
+                longitudeDelta: 0.05,
+            };
+            setCurrRegion(newRegion);
+            mapRef.current.animateToRegion(newRegion, 1000); // Animate to the new region
+        } else if (!searchKeyword && deviceLocation) {
+            // If search keyword is empty and device location is available, move to device location
+            const newRegion = {
+                ...deviceLocation,
+                latitudeDelta: 0.05,
+                longitudeDelta: 0.05,
+            };
+            setCurrRegion(newRegion);
+            mapRef.current.animateToRegion(newRegion, 1000);
+        }
+    }, [searchResultData, deviceLocation]);
 
     // func for bottom sheet
     const markerPressed = (vehicle) => {
