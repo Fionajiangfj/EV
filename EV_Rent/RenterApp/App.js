@@ -9,8 +9,13 @@ import LoginScreen from './screens/LoginScreen';
 import HomeScreen from './screens/HomeScreen';
 import MyReservationsScreen from './screens/MyReservationsScreen';
 
+// import the auth variable
+import { auth } from './firebaseConfig';
+import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
+
 // icons
 import { MaterialIcons } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -63,7 +68,24 @@ const TabNavigator = () => {
         headerTintColor: '#fff'
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Home" component={HomeScreen} options={{
+        title: 'Home', headerRight: () => (
+          <MaterialIcons
+            name="logout"
+            size={24}
+            color="white"
+            onPress={async () => {
+              try {
+                await signOut(auth)
+                alert("Logout complete!")
+                navigation.navigate('Login');
+              } catch (err) {
+                console.log(err)
+              }
+            }}
+          />
+        ),
+      }} />
       <Tab.Screen name="My Reservations" component={MyReservationsScreen} />
     </Tab.Navigator>
   );
