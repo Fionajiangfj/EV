@@ -189,7 +189,6 @@ const styles = StyleSheet.create({
     },
     map: {
         height: "85%",
-        // height: "70%",
         width: "100%",
         marginTop: 15,
     },
