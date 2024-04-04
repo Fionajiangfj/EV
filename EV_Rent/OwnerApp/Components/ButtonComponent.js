@@ -21,7 +21,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     buttonBg: {
-        // backgroundColor: '#0064B1',
         borderRadius: 10,
         paddingHorizontal: 5,
         paddingVertical: 10,

@@ -124,7 +124,7 @@ const MyRentalListScreen = ({ navigation }) => {
 
             <Text style={styles.header}>My Rental Listings</Text>
 
-            {/* Customized button to view favourites */}
+            {/* Customized button */}
             <ButtonComponent
                 onPress={() => deleteAllRentalListings("Vehicle")}
                 text={"Delete All"}
@@ -133,7 +133,6 @@ const MyRentalListScreen = ({ navigation }) => {
                 disabled={myRentals.length === 0}
             />
 
-            {/* Conditionally render message when there are no favorites */}
             {myRentals.length === 0 ? (
                 <Text style={styles.noData}>No Data found</Text>
             ) : (

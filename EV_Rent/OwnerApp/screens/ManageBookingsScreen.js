@@ -2,7 +2,8 @@ import { collection, doc, getDocs, query, updateDoc, where } from 'firebase/fire
 import React, { useEffect, useState } from 'react';
 import { Button, FlatList, StyleSheet, Text, View, Image } from 'react-native';
 
-import { db } from '../firebaseConfig'; // Your Firebase config file
+// Your Firebase config file
+import { db } from '../firebaseConfig'; 
 
 const ManageBookingsScreen = () => {
 
@@ -123,7 +124,8 @@ const ManageBookingsScreen = () => {
                         console.error('Null ID encountered', item);
                     }
                     return item.id || Math.random().toString();
-                }} renderItem={({ item }) => renderManageBookingItem({ item })}
+                }} 
+                renderItem={({ item }) => renderManageBookingItem({ item })}
             />
         </View>
     );
@@ -148,7 +150,7 @@ const styles = StyleSheet.create({
     bookingItem: {
         backgroundColor: '#f9f9f9',
         padding: 20,
-        marginVertical: 8,
+        marginVertical: 5,
         marginHorizontal: 8,
         borderRadius: 5,
         flexDirection: 'row',

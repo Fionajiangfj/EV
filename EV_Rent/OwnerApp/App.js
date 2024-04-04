@@ -1,6 +1,6 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { NavigationContainer, useNavigation, getFocusedRouteNameFromRoute } from '@react-navigation/native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 
 // screens
 import MyRentalListScreen from './screens/MyRentalListScreen';
@@ -58,7 +58,8 @@ const StackNavigator = () => {
 
 const TabNavigator = () => {
 
-  const navigation = useNavigation(); // Use the useNavigation hook to access navigation
+  // Use the useNavigation hook to access navigation
+  const navigation = useNavigation(); 
 
   return (
     <Tab.Navigator screenOptions={({ navigation, route }) => ({
@@ -100,6 +101,7 @@ const TabNavigator = () => {
                 console.log(err)
               }
             }}
+            style={{paddingRight: 10}}
           />
         ),
       }} />

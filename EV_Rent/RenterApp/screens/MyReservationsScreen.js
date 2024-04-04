@@ -41,23 +41,30 @@ const MyReservationsScreen = ({ navigation }) => {
         navigation.push("BookingDetails", { booking: bookingString });
     }
 
-    const renderBookingItem = ({ item }) => (
-        <Pressable style={styles.listItem} onPress={() => goToBookingDetailsScreen(item)}>
-            <View style={styles.bookingItem}>
-                <Image source={{ uri: item.vehicle.vehiclePhoto }} style={styles.bookingImage} />
-                <View style={styles.bookingListsItem}>
-                    <Text style={styles.bookingTitle}>{item.vehicle.vehicleName}</Text>
-                    <Text style={styles.bookingDate}>{formatDate(item.bookingDate)}</Text>
-                    <Text>Pickup Location: {item.vehicle.pickupLocation.address}</Text>
-                    <View style={styles.bookingCol}>
-                        <Text style={styles.bookingPrice}>${item.vehicle.price}</Text>
-                        <Text style={styles.bookingStatus}> |  Status: {item.status}</Text>
+    const renderBookingItem = ({ item }) => {
+        if (!item.vehicle || !item.vehicle.vehiclePhoto) {
+            // Handle the case where item.vehicle or item.vehicle.vehiclePhoto is null
+            return null;
+        }
+    
+        return (
+            <Pressable style={styles.listItem} onPress={() => goToBookingDetailsScreen(item)}>
+                <View style={styles.bookingItem}>
+                    <Image source={{ uri: item.vehicle.vehiclePhoto }} style={styles.bookingImage} />
+                    <View style={styles.bookingListsItem}>
+                        <Text style={styles.bookingTitle}>{item.vehicle.vehicleName}</Text>
+                        <Text style={styles.bookingDate}>{formatDate(item.bookingDate)}</Text>
+                        <Text>Pickup Location: {item.vehicle.pickupLocation.address}</Text>
+                        <View style={styles.bookingCol}>
+                            <Text style={styles.bookingPrice}>${item.vehicle.price}</Text>
+                            <Text style={styles.bookingStatus}> |  Status: {item.status}</Text>
+                        </View>
+                        {item.status === 'confirmed' && <Text>Confirmation Code: {item.confirmationCode}</Text>}
                     </View>
-                    {item.status === 'confirmed' && <Text>Confirmation Code: {item.confirmationCode}</Text>}
                 </View>
-            </View>
-        </Pressable>
-    );
+            </Pressable>
+        );
+    };
 
 
     return (
@@ -79,7 +86,7 @@ const styles = StyleSheet.create({
     bookingItem: {
         backgroundColor: '#f9f9f9',
         padding: 20,
-        marginVertical: 8,
+        marginVertical: 5,
         marginHorizontal: 8,
         borderRadius: 5,
         flexDirection: 'row',
@@ -95,12 +102,12 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
     },
-    // image: {
-    //     width: '40%',
-    //     height: 200,
-    //     resizeMode: 'cover',
-    //     marginVertical: 8,
-    // },
+    image: {
+        width: '40%',
+        height: 200,
+        resizeMode: 'cover',
+        marginVertical: 8,
+    },
 
     bookingImage: {
         width: "40%",
