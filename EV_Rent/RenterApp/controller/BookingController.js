@@ -48,6 +48,8 @@ class BookingController{
         }
     }
 
+    
+
 }
 
 const bookingController = new BookingController();

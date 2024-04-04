@@ -11,6 +11,7 @@ import MyReservationsScreen from './screens/MyReservationsScreen';
 
 // icons
 import { MaterialIcons } from '@expo/vector-icons';
+import MyBookedVehicleDetailsScreen from './screens/MyBookedVehicleDetailsScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -38,6 +39,7 @@ const StackNavigator = () => {
       }}>
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Main" component={TabNavigator} options={{ headerShown: false }} />
+      <Stack.Screen name="BookingDetails" component={MyBookedVehicleDetailsScreen} />
     </Stack.Navigator>
   );
 

@@ -138,7 +138,7 @@ const MyRentalListScreen = ({ navigation }) => {
                     data={myRentals}
                     renderItem={({ item }) => (
                         <Pressable style={styles.listItem} onPress={() => goToDetailsScreen(item.id)}>
-                            <View style={styles.listImage}>
+                            <View style={styles.listItemBody}>
                                 <Image source={{ uri: item.vehiclePhoto }} style={{ width: "40%", height: 100, marginVertical: 10, borderRadius: 10 }} />
                                 <View style={styles.listBody}>
                                     <View style={styles.listBody}>
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
         color: 'black',
         fontWeight: 'bold',
     },
-    listImage: {
+    listItemBody: {
         flexDirection: 'row',
         justifyContent: 'flex-start',
         gap: 10,

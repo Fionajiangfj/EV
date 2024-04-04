@@ -1,14 +1,14 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'; 
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { vehicleController } from '../controller/VehicleController';
 
 // map imports
 import * as Location from "expo-location";
 import MapView, { Marker } from "react-native-maps";
 
-const MapViewComponent = ({ onMarkerPress, searchResultData }) => {
+const MapViewComponent = ({ onMarkerPress, searchResultData, searchKeyword }) => {
 
     const [deviceLocation, setDeviceLocation] = useState(null);
     const [currRegion, setCurrRegion] = useState(null);
@@ -18,7 +18,7 @@ const MapViewComponent = ({ onMarkerPress, searchResultData }) => {
     useEffect(() => {
         getCurrentLocation();
 
-        vehicleController.fetchVehicles((error,vehicles) => {
+        vehicleController.fetchVehicles((error, vehicles) => {
             if (error) {
                 console.error("failed fetching vehicles: ", error);
                 return;
@@ -90,72 +90,73 @@ const MapViewComponent = ({ onMarkerPress, searchResultData }) => {
         <View style={styles.mapContainer}>
             <Text>Your location is {JSON.stringify(deviceLocation)}</Text>
             {/* <Text>Your location is Lat: {deviceLocation.latitude}, Lng: {deviceLocation.longitude}</Text> */}
-            
 
-            { searchResultData.length === 0 ? (
-                <MapView
-                style={styles.map}
-                initialRegion={currRegion}
-                onRegionChangeComplete={mapMoved}
-                ref={mapRef}
-            >
-                {vehicles.map(vehicle => (
-                    <Marker
-                        key={vehicle.id}
-                        coordinate={{ latitude: vehicle.pickupLocation.lat, longitude: vehicle.pickupLocation.lng }}
-                        title={vehicle.name}
-                        onPress={() => markerPressed(vehicle)}
+            {searchKeyword && searchKeyword.length !== 0 || searchResultData.length !== 0 ? (
+                <View>
+                    <Text>Number of result found: {searchResultData.length}</Text>
+                    <MapView
+                        style={styles.map}
+                        initialRegion={currRegion}
+                        onRegionChangeComplete={mapMoved}
+                        ref={mapRef}
                     >
-                        <View style={styles.customMarker}>
-                            <Text style={styles.markerText}>${vehicle.price}</Text>
-                        </View>
-                    </Marker>
-                ))}
+                        {searchResultData.map(vehicle => (
+                            <Marker
+                                key={vehicle.id}
+                                coordinate={{ latitude: vehicle.pickupLocation.lat, longitude: vehicle.pickupLocation.lng }}
+                                title={vehicle.name}
+                                onPress={() => markerPressed(vehicle)}
+                            >
+                                <View style={styles.customMarker}>
+                                    <Text style={styles.markerText}>${vehicle.price}</Text>
+                                </View>
+                            </Marker>
+                        ))}
 
-                {deviceLocation && (
-                    <Marker
-                    coordinate={deviceLocation}
-                    title="My Location"
-                    >
-                        <Icon name="map-marker" size={30} color="#3498db" />
-                    </Marker>
-                )}
+                        {deviceLocation && (
+                            <Marker
+                                coordinate={deviceLocation}
+                                title="My Location"
+                            >
+                                <Icon name="map-marker" size={30} color="#3498db" />
+                            </Marker>
+                        )}
 
-            </MapView>
+                    </MapView>
+                </View>
             ) : (
+
                 <MapView
-                style={styles.map}
-                initialRegion={currRegion}
-                onRegionChangeComplete={mapMoved}
-                ref={mapRef}
-            >
+                    style={styles.map}
+                    initialRegion={currRegion}
+                    onRegionChangeComplete={mapMoved}
+                    ref={mapRef}
+                >
+                    {vehicles.map(vehicle => (
+                        <Marker
+                            key={vehicle.id}
+                            coordinate={{ latitude: vehicle.pickupLocation.lat, longitude: vehicle.pickupLocation.lng }}
+                            title={vehicle.name}
+                            onPress={() => markerPressed(vehicle)}
+                        >
+                            <View style={styles.customMarker}>
+                                <Text style={styles.markerText}>${vehicle.price}</Text>
+                            </View>
+                        </Marker>
+                    ))}
 
-                {searchResultData.map(vehicle => (
-                    <Marker
-                        key={vehicle.id}
-                        coordinate={{ latitude: vehicle.pickupLocation.lat, longitude: vehicle.pickupLocation.lng }}
-                        title={vehicle.name}
-                        onPress={() => markerPressed(vehicle)}
-                    >
-                        <View style={styles.customMarker}>
-                            <Text style={styles.markerText}>${vehicle.price}</Text>
-                        </View>
-                    </Marker>
-                ))}
+                    {deviceLocation && (
+                        <Marker
+                            coordinate={deviceLocation}
+                            title="My Location"
+                        >
+                            <Icon name="map-marker" size={30} color="#3498db" />
+                        </Marker>
+                    )}
 
-                {deviceLocation && (
-                    <Marker
-                    coordinate={deviceLocation}
-                    title="My Location"
-                    >
-                        <Icon name="map-marker" size={30} color="#3498db" />
-                    </Marker>
-                )}
+                </MapView>
 
-            </MapView>
-            )
-
-            }
+            )}
 
         </View>
     );
