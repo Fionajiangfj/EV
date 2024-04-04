@@ -102,19 +102,12 @@ const MyRentalDetailsScreen = ({ navigation, route }) => {
             <Text style={styles.detailText}>Owner: {selectedVehicleData.owner}</Text>
 
 
-            {/* Customized button to add video to favourites */}
+            
             {/* <ButtonComponent
                 onPress={buttonPressed}
                 text={"Update"}
                 justifyContent={"center"}
                 bgColor={"#0064B1"}
-            /> */}
-
-            {/* <ButtonComponent
-                onPress={editBtnPressed}
-                text={"Edit"}
-                justifyContent={"center"}
-                bgColor={"#FF0000"}
             /> */}
 
             <ButtonComponent
@@ -153,7 +146,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#0064B1',
         padding: 15,
-        // width: "30%",
     },
     rentalAddress: {
         fontSize: 16,

@@ -2,14 +2,19 @@ import { useState, useEffect } from 'react';
 import { View, Text, TextInput, StyleSheet, Pressable } from 'react-native';
 
 // import the auth variable
-import { auth } from '../firebaseConfig';
+import { auth, db } from '../firebaseConfig';
 import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { getDoc, doc } from "firebase/firestore";
+
+
+import ButtonComponent from '../Components/ButtonComponent';
 
 
 const LoginScreen = ({ navigation, route }) => {
 
     const [usernameFromUI, setUsernameFromUI] = useState("amy@gmail.com");
     const [passwordFromUI, setPasswordFromUI] = useState("123456");
+
 
     const onLoginClicked = async () => {
         //verify credentials
@@ -34,6 +39,8 @@ const LoginScreen = ({ navigation, route }) => {
 
     }
 
+    
+
     return (
 
         <View style={styles.container}>
@@ -42,7 +49,7 @@ const LoginScreen = ({ navigation, route }) => {
 
             <TextInput
                 style={styles.tb}
-                placeholder="peter@gmail.com"
+                placeholder="Enter your email"
                 textContentType="emailAddress"
                 autoCapitalize="none"
                 value={usernameFromUI}
@@ -57,9 +64,12 @@ const LoginScreen = ({ navigation, route }) => {
                 onChangeText={setPasswordFromUI}
             />
 
-            <Pressable style={styles.btn}>
-                <Text style={styles.btnLabel} onPress={onLoginClicked}>Login</Text>
-            </Pressable>
+            <ButtonComponent
+                onPress={onLoginClicked}
+                text={"Login"}
+                justifyContent={"center"}
+                bgColor={"#0064B1"}
+            />
 
         </View>
     );

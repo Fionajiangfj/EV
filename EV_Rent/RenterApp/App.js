@@ -88,6 +88,7 @@ const TabNavigator = () => {
                 console.log(err)
               }
             }}
+            style={{paddingRight: 10}}
           />
         ),
       }} />

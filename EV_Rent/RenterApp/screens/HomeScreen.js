@@ -8,12 +8,33 @@ import BottomSheet from "../Components/BottomSheet";
 import MapViewComponent from "../Components/MapView";
 import { vehicleController } from '../controller/VehicleController';
 
+//db
+import {  doc, getDoc } from "firebase/firestore";
+import { db } from "../firebaseConfig";
 
 const HomeScreen = () => {
+    
     const [searchKeyword, setSearchKeyword] = useState('')
     const [selectedVehicle, setSelectedVehicle] = useState(null)
     const [isBottomSheetVisible, setIsBottomSheetVisible] = useState(false);
     const [searchResult, setSearchResult] = useState([]);
+    const [userName, setUserName] = useState('');
+
+    const fetchUserData = async () => {
+        try {
+            const userRef = doc(db, "User", email);
+            const userSnap = await getDoc(userRef);
+    
+            if (userSnap.exists()) {
+                const userData = userSnap.data();
+                setUserName(userData.name); // Assuming 'name' is the field storing the user's name
+            } else {
+                console.error("User document does not exist.");
+            }
+        } catch (error) {
+            console.error('Failed to fetch user data:', error);
+        }
+    };
 
     // For bottom sheet
     const handleOpenBottomSheet = () => {
