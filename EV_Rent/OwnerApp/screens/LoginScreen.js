@@ -15,6 +15,39 @@ const LoginScreen = ({ navigation, route }) => {
     const [usernameFromUI, setUsernameFromUI] = useState("amy@gmail.com");
     const [passwordFromUI, setPasswordFromUI] = useState("123456");
 
+    const checkUserRole = async (email) => {
+        try{
+            const docRef = doc(db, "User", email);
+
+            const docSnapshot = await getDoc(docRef);
+
+            if (docSnapshot.exists()){
+
+                console.log(`Document data : ${JSON.stringify(docSnapshot.data())}`);
+
+                const userData = docSnapshot.data();
+                console.log(userData.role);
+                
+                if (userData.role !== "owner"){
+                    alert(`Only car owner can access this app!`)
+                    return
+                }
+
+                navigation.replace('Home', {
+                    screen: 'Rental Form',
+                    params: { email: usernameFromUI },
+                });
+
+            }else{
+                //no matching document for the given ID found
+                console.log(`no matching document for the given ID ${email} found`);
+                alert(`Sorry, you are not a registered user.`)
+            }
+
+        }catch(err){
+            console.error(`Error getting existing document with id ${email}: ${err}`);
+        }
+    }
 
     const onLoginClicked = async () => {
         //verify credentials
@@ -22,24 +55,17 @@ const LoginScreen = ({ navigation, route }) => {
             const userCredential = await signInWithEmailAndPassword(auth, usernameFromUI, passwordFromUI)
             // who is the current user?
             console.log("Who is the currently logged in user")
-            console.log(auth.currentUser)
-            // alert(`Login success! ${auth.currentUser.uid}`)
+            console.log(auth.currentUser.email)
 
+            checkUserRole(auth.currentUser.email)
 
-            navigation.replace('Home', {
-                screen: 'Rental Form',
-                params: { email: usernameFromUI },
-            });
-
+            
 
         } catch (err) {
             console.log(err)
+            alert(`Sorry, the login info is incorrect.`)
         }
-
-
     }
-
-    
 
     return (
 
