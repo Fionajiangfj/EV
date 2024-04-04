@@ -8,14 +8,7 @@ import LoginScreen from './screens/LoginScreen';
 import ManageBookingsScreen from './screens/ManageBookingsScreen';
 import RentalFormScreen from './screens/RentalFormScreen';
 import MyRentalDetailsScreen from './screens/MyRentalDetailsScreen';
-
-
 import EditDetailsScreen from './screens/EditDetailsScreen';
-
-
-
-
-
 
 // import the auth variable
 import { auth } from './firebaseConfig';
@@ -113,7 +106,11 @@ const TabNavigator = () => {
 
 const DetailsStackNavigator = () => {
   return (
-    <DetailsStack.Navigator>
+    <DetailsStack.Navigator screenOptions={{
+      headerStyle: { backgroundColor: '#0064B1' },
+      headerTintColor: '#fff',
+      headerTitleStyle: { fontWeight: 'bold' },
+    }}>
       <DetailsStack.Screen name="RentalDetails" component={MyRentalDetailsScreen} />
       <DetailsStack.Screen name="EditDetails" component={EditDetailsScreen} />
     </DetailsStack.Navigator>
