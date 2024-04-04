@@ -9,6 +9,14 @@ import ManageBookingsScreen from './screens/ManageBookingsScreen';
 import RentalFormScreen from './screens/RentalFormScreen';
 import MyRentalDetailsScreen from './screens/MyRentalDetailsScreen';
 
+
+import EditDetailsScreen from './screens/EditDetailsScreen';
+
+
+
+
+
+
 // import the auth variable
 import { auth } from './firebaseConfig';
 import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
@@ -19,6 +27,7 @@ import { AntDesign } from '@expo/vector-icons';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
+const DetailsStack = createStackNavigator();
 
 const App = () => {
   return (
@@ -40,7 +49,9 @@ const StackNavigator = () => {
       }}>
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Home" component={TabNavigator} options={{ headerShown: false }} />
-      <Stack.Screen name="RentalDetails" component={MyRentalDetailsScreen} />
+      {/* <Stack.Screen name="RentalDetails" component={MyRentalDetailsScreen} /> */}
+      <Tab.Screen name="Rental Details Screens" component={DetailsStackNavigator} options={{ headerShown: false }} />
+
     </Stack.Navigator>
   );
 }
@@ -98,3 +109,11 @@ const TabNavigator = () => {
   );
 }
 
+const DetailsStackNavigator = () => {
+  return (
+    <DetailsStack.Navigator>
+      <DetailsStack.Screen name="RentalDetails" component={MyRentalDetailsScreen} />
+      <DetailsStack.Screen name="EditDetails" component={EditDetailsScreen} />
+    </DetailsStack.Navigator>
+  );
+};
