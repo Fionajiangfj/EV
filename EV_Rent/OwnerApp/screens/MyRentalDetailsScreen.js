@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, Image } from "react-native";
 import { useState, useEffect } from "react";
+import { StackActions } from '@react-navigation/native';
 
 // components
 import ButtonComponent from "../Components/ButtonComponent";
@@ -9,7 +10,10 @@ import { db } from "../firebaseConfig";
 import { collection, doc, getDoc, deleteDoc } from "firebase/firestore";
 
 
-const MyRentalDetailsScreen = ({ route }) => {
+const MyRentalDetailsScreen = ({ navigation, route }) => {
+
+    // get id from rental list screen
+    const { id } = route.params;
 
     // state variables
     const [selectedVehicleData, setSelectedVehicleData] = useState([])
@@ -18,10 +22,23 @@ const MyRentalDetailsScreen = ({ route }) => {
         getSelectedVehicleDataFromDB()
     }, [])
 
-    const buttonPressed = () => {
+    const buttonPressed = async () => {
         console.log("Button Pressed!!!")
-        alert("Deleted successfully!")
+
+        try {
+            const docRef = doc(db, "Vehicle", id);
+            await deleteDoc(docRef);
+            console.log(`Document with id ${id} successfully deleted`);
+            alert("Deleted successfully!")
+            navigation.dispatch(StackActions.pop(1));
+        } catch (err) {
+            console.error(`Error while deleting document to collection : ${err}`);
+        }
     }
+
+    // const editBtnPressed = async () => {
+    //     console.log(`Edit button pressed.`);
+    // }
 
     const getSelectedVehicleDataFromDB = async () => {
 
@@ -92,12 +109,22 @@ const MyRentalDetailsScreen = ({ route }) => {
                 justifyContent={"center"}
                 bgColor={"#0064B1"}
             /> */}
+
+            {/* <ButtonComponent
+                onPress={editBtnPressed}
+                text={"Edit"}
+                justifyContent={"center"}
+                bgColor={"#FF0000"}
+            /> */}
+
             <ButtonComponent
                 onPress={buttonPressed}
                 text={"Delete"}
                 justifyContent={"center"}
                 bgColor={"#FF0000"}
             />
+
+
 
         </View>
     );
