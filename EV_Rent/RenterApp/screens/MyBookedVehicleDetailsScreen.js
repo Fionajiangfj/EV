@@ -72,6 +72,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         padding: 15,
         fontWeight: '700',
+        width: "70%",
     },
     rentalPrice: {
         fontSize: 18,

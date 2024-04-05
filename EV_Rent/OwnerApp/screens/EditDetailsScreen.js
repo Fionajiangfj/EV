@@ -198,24 +198,6 @@ const EditDetailsScreen = ({ navigation, route }) => {
 
       alert(`Updated successfully!`)
 
-      // // Retrieve the user document from Firestore
-      // const userRef = doc(db, "User", email);
-      // const userSnap = await getDoc(userRef);
-
-      // // Check if the user exists
-      // if (userSnap.exists()) {
-      //   // Update the user document to include the ID of the newly added car in its vehicle list
-      //   const userData = userSnap.data();
-      //   const updatedVehicles = userData.vehicles || [];
-      //   updatedVehicles.push(docRef.id);
-
-      //   // Update the user document
-      //   await updateDoc(userRef, { vehicles: updatedVehicles });
-      //   console.log(`User document updated successfully.`);
-      // } else {
-      //   console.error("User document does not exist.");
-      // }
-
       // navigation.dispatch(StackActions.pop(1));
       navigation.navigate('Rental List');
       // route.params?.updateRentalList?.();
