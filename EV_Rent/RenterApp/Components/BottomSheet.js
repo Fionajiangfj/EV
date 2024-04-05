@@ -6,12 +6,11 @@ import { bookingController } from '../controller/BookingController';
 import { Booking } from '../model/Booking';
 import StatusEnum from '../model/enum/Status';
 import ButtonComponent from './ButtonComponent';
-
+import { db, auth } from '../firebaseConfig';
 
 const BottomSheet = ({ isVisible, onClose, vehicle }) => {
     const [isOpen, setIsOpen] = useState(false);
     const bottomSheetRef = useRef(null);
-    const currentUserId = "amy@gmail.com" // replace with actual user ID
 
     useEffect(() => {
         if (isVisible) {
@@ -30,8 +29,9 @@ const BottomSheet = ({ isVisible, onClose, vehicle }) => {
         return today;
     }
     const doBooking = () => {
+         const user = auth.currentUser;
         const futureDate = getRandomFutureDate();
-        const newBooking = new Booking(null, currentUserId, vehicle.id, futureDate, StatusEnum.pending, null)
+        const newBooking = new Booking(null, user.email, vehicle.id, futureDate, StatusEnum.pending, null)
         bookingController.addBooking(newBooking, (error, booking) => {
             if (error) {
                 console.error("Error adding document: ", error);

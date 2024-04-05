@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, Text, View, Image, Pressable } from 'react-native';
 import { bookingController } from '../controller/BookingController';
 import { vehicleController } from '../controller/VehicleController';
+import { db, auth } from '../firebaseConfig';
 
 const MyReservationsScreen = ({ navigation }) => {
     const [bookings, setBookings] = useState([]);
@@ -21,7 +22,8 @@ const MyReservationsScreen = ({ navigation }) => {
     };
 
     useEffect(() => {
-        const userId = 'amy@gmail.com'; // Replace this with the actual user ID
+        const user = auth.currentUser;
+        const userId = user.email; // Replace this with the actual user ID
         const unsubscribe = bookingController.fetchUserBookings(userId, async (bookings) => {
             const bookingsWithVehicleInfo = await Promise.all(bookings.map(async (booking) => {
                 const vehicleInfo = await vehicleController.fetchVehicleById(booking.vehicle);
@@ -96,6 +98,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'flex-start',
         gap: 10,
+        width: '70%',
     },
 
     bookingTitle: {
@@ -126,6 +129,7 @@ const styles = StyleSheet.create({
     bookingCol: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+        width: '70%',
     },
 
     bookingPrice: {

@@ -1,9 +1,9 @@
 import { collection, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
-import { Button, FlatList, StyleSheet, Text, View, Image } from 'react-native';
+import { FlatList, StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 
 // Your Firebase config file
-import { db } from '../firebaseConfig'; 
+import { db } from '../firebaseConfig';
 
 const ManageBookingsScreen = () => {
 
@@ -26,6 +26,7 @@ const ManageBookingsScreen = () => {
     };
 
     useEffect(() => {
+
         const fetchBookingsForOwner = async (ownerId) => {
             // Step 1: Fetch all vehicles owned by the ownerId
             const vehiclesQuery = query(collection(db, 'Vehicle'), where('owner', '==', ownerId));
@@ -37,14 +38,13 @@ const ManageBookingsScreen = () => {
                 const bookingQuery = query(collection(db, 'Booking'), where('vehicle', '==', vehicle.id));
                 const bookingsSnapshot = await getDocs(bookingQuery);
                 const bookingsForVehicle = bookingsSnapshot.docs.map(doc => {
-                    console.log("docID:::::", { id: doc.id, ...doc.data(), vehicleInfo: vehicle });
-
-                    return ({ id: doc.id, ...doc.data(), vehicleInfo: vehicle })
-
+                    console.log("Booking document data:", doc.data()); // Log the booking document data
+                    console.log("Vehicle info:", vehicle);
+                    return ({ ...doc.data(), id: doc.id, vehicleInfo: vehicle });
                 });
                 allBookings = [...allBookings, ...bookingsForVehicle];
             }
-            console.log(allBookings);
+            console.log("All bookings:", allBookings);
             setBookings(allBookings);
         };
 
@@ -99,18 +99,29 @@ const ManageBookingsScreen = () => {
                 <Text>{item.vehicleInfo.pickupLocation.address}</Text>
                 <Text>Renter: {item.renter}</Text>
                 <Text>License: {item.vehicleInfo.licensePlate}</Text>
-                
-                {item.status === 'confirmed' && <Text>Confirmation Code: {item.confirmationCode}</Text>}
-                {item.status === 'pending' && (
-                    <View style={styles.buttonsContainer}>
-                        <Button title="Approve" onPress={() => handleApproveBooking(item.id)} />
-                        <Button title="Decline" onPress={() => handleDeclineBooking(item.id)} />
-                    </View>
-                )}
                 <View style={styles.bookingCol}>
                     <Text style={styles.bookingPrice}>${item.vehicleInfo.price}</Text>
                     <Text style={styles.bookingStatus}> |  Status: {item.status}</Text>
                 </View>
+
+                {item.status === 'confirmed' && <Text>Confirmation Code: {item.confirmationCode}</Text>}
+                {item.status === 'pending' && (
+                    <View style={styles.buttonsContainer}>
+                        {/* <Pressable onPress={() => handleApproveBooking(item.id)} >
+                            <Text>Approve</Text>
+                        </Pressable>
+                        <Pressable title="Decline" onPress={() => handleDeclineBooking(item.id)} /> */}
+
+                        <TouchableOpacity style={styles.approveButton} onPress={() => handleApproveBooking(item.id)}>
+                            <Text style={styles.buttonText}>Approve</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.declineButton} onPress={() => handleDeclineBooking(item.id)}>
+                            <Text style={styles.buttonText}>Decline</Text>
+                        </TouchableOpacity>
+
+                    </View>
+                )}
+
             </View>
         </View>
     );
@@ -119,12 +130,8 @@ const ManageBookingsScreen = () => {
         <View style={styles.container}>
             <FlatList
                 data={bookings}
-                keyExtractor={item => {
-                    if (!item.id) {
-                        console.error('Null ID encountered', item);
-                    }
-                    return item.id || Math.random().toString();
-                }} 
+                keyExtractor={(item, index) => item.id ? item.id : index.toString()}
+
                 renderItem={({ item }) => renderManageBookingItem({ item })}
             />
         </View>
@@ -134,7 +141,7 @@ const ManageBookingsScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-    }, 
+    },
     renterPhoto: {
         width: 50,
         height: 50,
@@ -143,7 +150,7 @@ const styles = StyleSheet.create({
     buttonsContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginTop: 10,
+        width: "70%",
     },
 
     // booking
@@ -160,6 +167,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'flex-start',
         gap: 10,
+        width: '75%',
     },
 
     bookingTitle: {
@@ -177,6 +185,7 @@ const styles = StyleSheet.create({
     bookingCol: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+        width: '70%',
     },
 
     bookingPrice: {
@@ -192,7 +201,25 @@ const styles = StyleSheet.create({
     bookingDate: {
         fontSize: 12,
         color: 'gray',
-    }
+    },
+
+    approveButton: {
+        backgroundColor: 'green',
+        padding: 10,
+        margin: 10,
+        borderRadius: 5,
+    },
+    declineButton: {
+        backgroundColor: 'red',
+        padding: 10,
+        margin: 10,
+        borderRadius: 5,
+    },
+    buttonText: {
+        color: 'white',
+        textAlign: 'center',
+        fontWeight: 'bold',
+    },
 
 });
 
